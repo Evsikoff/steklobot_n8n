@@ -184,9 +184,9 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "customer_chat_id": "={{ $('Normalize Thread Lookup').item.json.customerChatId }}",
+            "customer_chat_id": "={{ $('\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u0440\u0435\u0434\u0430').item.json.customerChatId }}",
             "topic_id": "={{ $json.result.message_thread_id }}",
-            "customer_name": "={{ $('Normalize Thread Lookup').item.json.customerName }}",
+            "customer_name": "={{ $('\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u0440\u0435\u0434\u0430').item.json.customerName }}",
             "mode": "ai",
             "status": "open",
             "history": "[]"
@@ -492,7 +492,7 @@
         "chatId": "-1003881399417",
         "text": "=\ud83e\udd16 LLM: {{ String($('\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418').item.json.reply || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
         "additionalFields": {
-          "message_thread_id": "={{ $('Parse LLM Output').item.json.topicId }}",
+          "message_thread_id": "={{ $('\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418').item.json.topicId }}",
           "parse_mode": "HTML",
           "appendAttribution": false
         }
@@ -525,7 +525,7 @@
           "conditions": [
             {
               "id": "c1",
-              "leftValue": "={{ $('Parse LLM Output').item.json.escalate ? 'yes' : 'no' }}",
+              "leftValue": "={{ $('\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418').item.json.escalate ? 'yes' : 'no' }}",
               "rightValue": "yes",
               "operator": {
                 "type": "string",
@@ -554,7 +554,7 @@
         "chatId": "-1003881399417",
         "text": "=\ud83d\udd14 {{ String($('\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418').item.json.escalate.reason || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}: {{ String($('\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418').item.json.escalate.summary || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
         "additionalFields": {
-          "message_thread_id": "={{ $('Parse LLM Output').item.json.topicId }}",
+          "message_thread_id": "={{ $('\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418').item.json.topicId }}",
           "parse_mode": "HTML",
           "appendAttribution": false
         }
@@ -781,7 +781,7 @@
         "chatId": "-1003881399417",
         "text": "\u0411\u043e\u0442 \u0441\u043d\u043e\u0432\u0430 \u043e\u0442\u0432\u0435\u0447\u0430\u0435\u0442 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438.",
         "additionalFields": {
-          "message_thread_id": "={{ $('Normalize Topic Lookup').item.json.topicId }}",
+          "message_thread_id": "={{ $('\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u043e\u043f\u0438\u043a\u0430').item.json.topicId }}",
           "parse_mode": "HTML",
           "appendAttribution": false
         }
