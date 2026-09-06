@@ -1,0 +1,1130 @@
+{
+  "name": "Автостекло — бот + прайс Google Sheets",
+  "nodes": [
+    {
+      "id": "a187a025-07d0-4e28-9bd9-9ff8f49c4b1e",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram Bot (замени credential)"
+        }
+      }
+    },
+    {
+      "id": "0667d22c-9000-485b-b416-dffeb0e1682d",
+      "name": "If Is Private",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        260,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.message.chat.type }}",
+              "rightValue": "private",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "776f3799-00f7-46b2-ac34-4a8026b3bf77",
+      "name": "Get Thread By Chat",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        520,
+        -160
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "auto_glass_threads",
+          "cachedResultName": "auto_glass_threads"
+        },
+        "matchType": "anyCondition",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "customer_chat_id",
+              "condition": "eq",
+              "keyValue": "={{ String($json.message.chat.id) }}"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "4576b887-51b6-4655-a385-b179fad8302a",
+      "name": "Normalize Thread Lookup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        -160
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const matches = $input.all();\nconst trigger = $('Telegram Trigger').first().json;\nconst chatId = String(trigger.message.chat.id);\nconst text = trigger.message.text || '';\nconst chat = trigger.message.chat;\nconst name = chat.first_name || chat.username || ('Клиент ' + chatId);\nconst row = matches.map(item => item.json).find(item => item && item.customer_chat_id != null);\nif (row) {\n  return [{ json: {\n    found: true,\n    customerChatId: chatId,\n    customerName: row.customer_name,\n    topicId: row.topic_id,\n    mode: row.mode,\n    history: row.history,\n    incomingText: text\n  } }];\n}\nreturn [{ json: {\n  found: false,\n  customerChatId: chatId,\n  customerName: name,\n  topicId: null,\n  mode: 'ai',\n  history: '[]',\n  incomingText: text\n} }];"
+      }
+    },
+    {
+      "id": "217f4489-6271-4533-9ab5-7b4593236e9e",
+      "name": "If Need New Topic",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        -160
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.topicId ? 'exists' : 'missing' }}",
+              "rightValue": "missing",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "ac88a5b7-445b-4f46-b0a5-6747cb7d48d7",
+      "name": "Create Forum Topic",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        -280
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8912500576:AAEmTiXkiucOvHrVDY0NSakmsSU-xHltm84/createForumTopic",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: '-1003881399417', name: ($('Normalize Thread Lookup').item.json.customerName + ' #' + $('Normalize Thread Lookup').item.json.customerChatId) }) }}"
+      }
+    },
+    {
+      "id": "bab5f04e-e94d-4bbe-b9e8-c1237a2b8e72",
+      "name": "Insert Thread Row",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1560,
+        -280
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "auto_glass_threads",
+          "cachedResultName": "auto_glass_threads"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "customer_chat_id": "={{ $('Normalize Thread Lookup').item.json.customerChatId }}",
+            "topic_id": "={{ $json.result.message_thread_id }}",
+            "customer_name": "={{ $('Normalize Thread Lookup').item.json.customerName }}",
+            "mode": "ai",
+            "status": "open",
+            "history": "[]"
+          }
+        }
+      }
+    },
+    {
+      "id": "7114937e-6761-4fc5-bb12-2556d99bbe63",
+      "name": "Thread State",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1820,
+        -160
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const j = $input.first().json;\nconst base = $('Normalize Thread Lookup').first().json;\nconst customerChatId = j.customer_chat_id ?? j.customerChatId ?? base.customerChatId;\nconst topicId = j.topic_id ?? j.topicId ?? base.topicId;\nconst mode = j.mode ?? base.mode;\nconst history = j.history ?? base.history;\nconst customerName = j.customer_name ?? j.customerName ?? base.customerName;\nreturn [{ json: { customerChatId, customerName, topicId, mode, history, incomingText: base.incomingText } }];"
+      }
+    },
+    {
+      "id": "42ddd08e-9756-4acc-942b-25f88ec14a25",
+      "name": "Mirror Customer To Topic",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2340,
+        -280
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "-1003881399417",
+        "text": "=👤 Клиент: {{ String($json.incomingText || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "additionalFields": {
+          "message_thread_id": "={{ $json.topicId }}",
+          "parse_mode": "HTML",
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram Bot (замени credential)"
+        }
+      }
+    },
+    {
+      "id": "43a81f87-c6a6-4eb2-a29f-f3655b229af5",
+      "name": "If Mode Is Human",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2080,
+        -160
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.mode }}",
+              "rightValue": "human",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "a1e44340-0c7d-4e78-9cf9-f13bb88857e2",
+      "name": "Mirror Customer To Topic (Human)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2340,
+        -40
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "-1003881399417",
+        "text": "=👤 Клиент: {{ String($json.incomingText || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "additionalFields": {
+          "message_thread_id": "={{ $json.topicId }}",
+          "parse_mode": "HTML",
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram Bot (замени credential)"
+        }
+      }
+    },
+    {
+      "id": "1c620c91-76c3-4b50-90bd-a683ad77a860",
+      "name": "Load Price List",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2340,
+        -160
+      ],
+      "parameters": {
+        "url": "https://docs.google.com/spreadsheets/d/1DHQVmpHrFyOBWu3UYpCchaezL9PycW1thqlTXDZeHtQ/export?format=csv&gid=0",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "outputPropertyName": "priceCsv"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "0b47d2d0-23c1-42c8-b82a-bf82c53fb24a",
+      "name": "Prepare Price Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2600,
+        -160
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const input = $input.first().json;\nconst csv = typeof input.priceCsv === 'string' ? input.priceCsv : '';\n\nfunction parseCsv(text) {\n  const rows = [];\n  let row = [];\n  let field = '';\n  let quoted = false;\n  for (let i = 0; i < text.length; i++) {\n    const ch = text[i];\n    if (quoted) {\n      if (ch === '\"' && text[i + 1] === '\"') { field += '\"'; i++; }\n      else if (ch === '\"') quoted = false;\n      else field += ch;\n    } else if (ch === '\"') quoted = true;\n    else if (ch === ',') { row.push(field); field = ''; }\n    else if (ch === '\\n') { row.push(field); rows.push(row); row = []; field = ''; }\n    else if (ch !== '\\r') field += ch;\n  }\n  if (field.length || row.length) { row.push(field); rows.push(row); }\n  return rows;\n}\n\nconst parsedRows = csv ? parseCsv(csv) : [];\nconst headers = (parsedRows.shift() || []).map((value, index) => String(value).trim().replace(index === 0 ? /^\\uFEFF/ : /$^/, ''));\nconst records = parsedRows\n  .filter(cells => cells.some(value => String(value).trim() !== ''))\n  .map(cells => Object.fromEntries(headers.map((header, index) => [header, String(cells[index] ?? '').trim()])));\nconst priceRows = records\n  .filter(row => row.id && row.make && row.model)\n  .map(row => ({\n    id: String(row.id),\n    make: row.make,\n    model: row.model,\n    year_from: Number(row.year_from),\n    year_to: Number(row.year_to),\n    glass_type: row.glass_type,\n    features: row.features,\n    brand: row.brand,\n    price_glass: Number(row.price_glass),\n    price_work: Number(row.price_work),\n    in_stock: row.in_stock\n  }));\nconst thread = $('Thread State').first().json;\nreturn [{ json: {\n  ...thread,\n  priceListAvailable: priceRows.length > 0,\n  priceRows,\n  priceListJson: JSON.stringify(priceRows)\n} }];"
+      }
+    },
+    {
+      "id": "6a3477ff-2012-4cfd-9bc3-aa73beb6f504",
+      "name": "Gemini Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        2860,
+        60
+      ],
+      "parameters": {
+        "modelName": "models/gemini-3.7-flash",
+        "options": {
+          "temperature": 0.1,
+          "maxOutputTokens": 1024
+        }
+      },
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2",
+          "name": "Google Gemini (замени credential)"
+        }
+      }
+    },
+    {
+      "id": "08036c52-acc7-42b7-bc73-ff0bd7dc199a",
+      "name": "Ask LLM",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2860,
+        -160
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Ты — ассистент службы замены автостёкол в Telegram. Отвечай по-русски, дружелюбно и кратко. Всегда учитывай всю историю диалога: короткие ответы клиента вроде \"для той и для той\", \"с датчиком дождя\" или \"обе\" относятся к вариантам, обсуждавшимся выше.\n\nНиже передан актуальный прайс из Google Sheets. Это ЕДИНСТВЕННЫЙ допустимый источник цен. Никогда не придумывай цену, наличие, бренд или характеристики и не используй знания вне прайса.\n\nПравила поиска:\n1. Для подбора нужны марка, модель, год автомобиля и тип стекла. Лобовое = Front, заднее = Rear, боковое = Side.\n2. Год должен входить в диапазон year_from–year_to включительно. Марку и модель сопоставляй без учёта регистра. Допускай очевидную русскую транслитерацию и опечатки: Хендай/Хундай = Hyundai, Солярис/солярий = Solaris.\n3. Сначала найди все строки, подходящие по марке, модели, году и типу стекла. Различия в features и brand означают разные варианты, а не отсутствие результата.\n4. Если найдено от 1 до 5 вариантов, НЕ проси клиента выбрать комплектацию до показа цены. Верни все их id в matchedPriceIds и lookupStatus = \"found\" для одного варианта либо \"found_multiple\" для нескольких. Workflow сам покажет каждый вариант и точные цены.\n5. Если клиент просит \"все варианты\", \"для той и для той\", \"какие есть цены\" или аналогично, обязательно верни все подходящие варианты, если их не больше пяти.\n6. Задавай один конкретный уточняющий вопрос и возвращай lookupStatus = \"need_details\" только если не хватает марки, модели, года или типа стекла, либо подходящих вариантов больше пяти.\n7. Если клиент сообщил достаточно данных, но ни одной строки нет, верни lookupStatus = \"not_found\" и передай менеджеру.\n8. Если цена не запрашивается и подбор не выполняется, верни lookupStatus = \"not_requested\".\n9. Когда клиент явно готов оформить заказ или спрашивает о записи, верни escalate.reason = \"deal_ready\".\n10. При lookupStatus = \"not_found\" верни escalate.reason = \"price_not_found\".\n11. Самостоятельно не пиши числа цен в reply: цены сформирует workflow строго из выбранных строк.\n\nВерни СТРОГО один JSON-объект без markdown и дополнительного текста:\n{\"reply\":\"короткий ответ или уточняющий вопрос\",\"lookupStatus\":\"not_requested|need_details|found|found_multiple|not_found\",\"matchedPriceIds\":[],\"escalate\":null}\nПример нескольких вариантов:\n{\"reply\":\"Нашёл несколько подходящих вариантов.\",\"lookupStatus\":\"found_multiple\",\"matchedPriceIds\":[\"11\",\"17\"],\"escalate\":null}\nПри передаче менеджеру:\n{\"reply\":\"\",\"lookupStatus\":\"not_found\",\"matchedPriceIds\":[],\"escalate\":{\"reason\":\"price_not_found\",\"summary\":\"что искал клиент и почему строка не найдена\"}}\n\nПрайс доступен: {{ $json.priceListAvailable }}\nПрайс (JSON): {{ $json.priceListJson }}\n\nИстория переписки (JSON): {{ $json.history }}\nНовое сообщение клиента: {{ $json.incomingText }}"
+      },
+      "retryOnFail": true,
+      "maxTries": 4,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "4b2bcf11-5e9f-40e0-80e4-eab7c49ef8ce",
+      "name": "Parse LLM Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3120,
+        -160
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const input = $input.first().json;\nconst raw = String(input.text || '').trim();\nconst context = $('Prepare Price Context').first().json;\nconst thread = $('Thread State').first().json;\nconst priceRows = Array.isArray(context.priceRows) ? context.priceRows : [];\nlet parsed;\ntry {\n  const match = raw.match(/\\{[\\s\\S]*\\}/);\n  parsed = JSON.parse(match ? match[0] : raw);\n} catch (e) {\n  parsed = null;\n}\n\nlet reply = parsed?.reply ? String(parsed.reply).trim() : '';\nlet escalate = parsed?.escalate || null;\nlet lookupStatus = parsed?.lookupStatus || 'not_requested';\nlet requestedIds = Array.isArray(parsed?.matchedPriceIds) ? parsed.matchedPriceIds : [];\nif (!requestedIds.length && parsed?.matchedPriceId != null) requestedIds = [parsed.matchedPriceId];\nrequestedIds = [...new Set(requestedIds.map(String))];\nlet matchedRows = [];\n\nconst money = value => Number(value).toLocaleString('ru-RU') + ' ₽';\nconst typeName = value => ({ Front: 'лобовое', Rear: 'заднее', Side: 'боковое' }[value] || value);\nconst featureNames = value => {\n  const names = { 'None': 'без доп. опций', 'Rain sensor': 'датчик дождя', 'Heating': 'обогрев', 'Camera': 'камера', 'HUD': 'HUD', 'Solar': 'солнцезащитное' };\n  return String(value || 'None').split(',').map(item => names[item.trim()] || item.trim()).join(', ');\n};\n\nif (!parsed) {\n  reply = 'Извините, сейчас не удалось обработать запрос. Подключаю менеджера — он поможет с подбором и ценой.';\n  escalate = { reason: 'ai_unavailable', summary: 'Gemini не вернул корректный JSON. Требуется ответ менеджера.' };\n} else if (!context.priceListAvailable && lookupStatus !== 'not_requested') {\n  lookupStatus = 'not_found';\n  reply = 'Извините, сейчас не удалось получить актуальный прайс. Подключаю менеджера — он уточнит цену.';\n  escalate = { reason: 'price_source_unavailable', summary: 'Не удалось загрузить прайс Google Sheets.' };\n} else if (lookupStatus === 'found' || lookupStatus === 'found_multiple') {\n  matchedRows = requestedIds.map(id => priceRows.find(row => String(row.id) === id)).filter(Boolean);\n  if (!matchedRows.length) {\n    lookupStatus = 'not_found';\n    reply = 'Извините, я не нашёл подходящую цену в прайс-листе. Подключаю менеджера — он уточнит стоимость.';\n    escalate = { reason: 'price_not_found', summary: 'Модель не указала существующие id строк прайса для запроса: ' + thread.incomingText };\n  } else if (matchedRows.length > 5) {\n    lookupStatus = 'need_details';\n    matchedRows = [];\n    reply = 'Нашлось много вариантов. Уточните, пожалуйста, комплектацию стекла: наличие датчика дождя, обогрева, камеры или HUD.';\n    escalate = null;\n  } else {\n    if (escalate && ['price_not_found', 'price_source_unavailable'].includes(escalate.reason)) escalate = null;\n    const lines = matchedRows.map((row, index) => {\n      const total = Number(row.price_glass) + Number(row.price_work);\n      const availability = String(row.in_stock).toLowerCase() === 'yes' ? 'в наличии' : 'нет в наличии';\n      return (matchedRows.length > 1 ? (index + 1) + '. ' : '') + row.brand + ', ' + featureNames(row.features) + ', ' + row.year_from + '–' + row.year_to + ': стекло ' + money(row.price_glass) + ' + установка ' + money(row.price_work) + ' = ' + money(total) + '; ' + availability + '.';\n    });\n    const first = matchedRows[0];\n    const heading = matchedRows.length > 1\n      ? 'Для ' + first.make + ' ' + first.model + ', ' + typeName(first.glass_type) + ' стекло, нашёл ' + matchedRows.length + ' варианта:'\n      : 'По прайсу для ' + first.make + ' ' + first.model + ', ' + typeName(first.glass_type) + ' стекло:';\n    reply = heading + '\\n' + lines.join('\\n');\n    const availableCount = matchedRows.filter(row => String(row.in_stock).toLowerCase() === 'yes').length;\n    if (availableCount === 0 && !escalate) {\n      escalate = { reason: 'not_in_stock', summary: 'Все найденные позиции (' + requestedIds.join(', ') + ') отсутствуют в наличии; нужны альтернативы.' };\n      reply += '\\nСейчас эти позиции отмечены как отсутствующие. Подключаю менеджера, чтобы проверить альтернативы.';\n    }\n  }\n} else if (lookupStatus === 'not_found') {\n  reply = 'Извините, я не нашёл подходящую цену в прайс-листе. Подключаю менеджера — он уточнит стоимость.';\n  escalate = escalate || { reason: 'price_not_found', summary: 'Цена не найдена для запроса: ' + thread.incomingText };\n} else if (lookupStatus === 'need_details' && !reply) {\n  reply = 'Уточните, пожалуйста, марку, модель, год автомобиля и какое стекло требуется: лобовое, заднее или боковое?';\n}\n\nif (!reply) reply = 'Чем могу помочь с подбором автостекла?';\nlet history = [];\ntry { history = JSON.parse(thread.history || '[]'); } catch (e) { history = []; }\nhistory.push({ role: 'customer', text: thread.incomingText });\nhistory.push({ role: 'assistant', text: reply });\nif (history.length > 20) history = history.slice(-20);\nconst newMode = escalate ? 'human' : (thread.mode || 'ai');\nreturn [{ json: {\n  customerChatId: thread.customerChatId,\n  topicId: thread.topicId,\n  reply,\n  escalate,\n  newMode,\n  updatedHistory: JSON.stringify(history),\n  lookupStatus,\n  matchedPriceId: matchedRows.length === 1 ? matchedRows[0].id : null,\n  matchedPriceIds: matchedRows.map(row => row.id)\n} }];"
+      }
+    },
+    {
+      "id": "6655acdf-1e63-4d36-b1f4-72778e634e1a",
+      "name": "Update Thread After Reply",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3380,
+        -160
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "auto_glass_threads",
+          "cachedResultName": "auto_glass_threads"
+        },
+        "matchType": "anyCondition",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "customer_chat_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.customerChatId }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "mode": "={{ $json.newMode }}",
+            "history": "={{ $json.updatedHistory }}"
+          }
+        }
+      }
+    },
+    {
+      "id": "df634559-6b88-4986-8e5a-4e1f2d630b4b",
+      "name": "Reply To Customer",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3640,
+        -160
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $('Parse LLM Output').item.json.customerChatId }}",
+        "text": "={{ String($('Parse LLM Output').item.json.reply || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "additionalFields": {
+          "parse_mode": "HTML",
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram Bot (замени credential)"
+        }
+      }
+    },
+    {
+      "id": "40ff091e-fb05-4ee1-a81d-57eff36a2cd8",
+      "name": "Mirror LLM Answer",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3900,
+        -160
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "-1003881399417",
+        "text": "=🤖 LLM: {{ String($('Parse LLM Output').item.json.reply || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "additionalFields": {
+          "message_thread_id": "={{ $('Parse LLM Output').item.json.topicId }}",
+          "parse_mode": "HTML",
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram Bot (замени credential)"
+        }
+      }
+    },
+    {
+      "id": "e7f9cb08-9e36-425e-ab4d-786908b286c5",
+      "name": "If Escalate",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4160,
+        -160
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $('Parse LLM Output').item.json.escalate ? 'yes' : 'no' }}",
+              "rightValue": "yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "5b9e9351-c6fa-4562-aff9-79c070505986",
+      "name": "Post Escalation Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4420,
+        -160
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "-1003881399417",
+        "text": "=🔔 {{ String($('Parse LLM Output').item.json.escalate.reason || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}: {{ String($('Parse LLM Output').item.json.escalate.summary || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "additionalFields": {
+          "message_thread_id": "={{ $('Parse LLM Output').item.json.topicId }}",
+          "parse_mode": "HTML",
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram Bot (замени credential)"
+        }
+      }
+    },
+    {
+      "id": "2cf04df2-8784-41a2-b2da-53f29cca0238",
+      "name": "If Staff Message Valid",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        520,
+        260
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.message.message_thread_id ? 'yes' : 'no' }}",
+              "rightValue": "yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c2",
+              "leftValue": "={{ String($json.message.chat.id) }}",
+              "rightValue": "-1003881399417",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "f74a9a8d-6fa9-4a6c-b30b-e0cf2b743445",
+      "name": "Get Thread By Topic",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        780,
+        260
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "auto_glass_threads",
+          "cachedResultName": "auto_glass_threads"
+        },
+        "matchType": "anyCondition",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "topic_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.message.message_thread_id }}"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "8d9024c4-e3dd-4ddd-bd34-7983df966030",
+      "name": "Normalize Topic Lookup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        260
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const matches = $input.all();\nconst trigger = $('Telegram Trigger').first().json;\nconst text = trigger.message.text || '';\nconst row = matches.map(item => item.json).find(item => item && item.topic_id != null);\nif (row) {\n  return [{ json: { found: true, customerChatId: row.customer_chat_id, topicId: row.topic_id, text } }];\n}\nreturn [{ json: { found: false, customerChatId: null, topicId: trigger.message.message_thread_id, text } }];"
+      }
+    },
+    {
+      "id": "7e26b195-e8f5-4bb0-a2b4-31db85185988",
+      "name": "If Thread Found",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1300,
+        260
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.found ? 'yes' : 'no' }}",
+              "rightValue": "yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "c783f586-deb3-4b5d-8c30-fbe5d145b9bc",
+      "name": "If Is Ai Command",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1560,
+        260
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ ($json.text || '').trim().toLowerCase().startsWith('/ai') ? 'yes' : 'no' }}",
+              "rightValue": "yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "2ee5ba0e-b32a-4ad1-8a8f-2d5f529e42ea",
+      "name": "Set Mode Ai",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1820,
+        140
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "auto_glass_threads",
+          "cachedResultName": "auto_glass_threads"
+        },
+        "matchType": "anyCondition",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "customer_chat_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.customerChatId }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "mode": "ai"
+          }
+        }
+      }
+    },
+    {
+      "id": "5a6ca47a-7979-4259-93ea-12b8d561f622",
+      "name": "Confirm Ai Resumed",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2080,
+        140
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "-1003881399417",
+        "text": "Бот снова отвечает автоматически.",
+        "additionalFields": {
+          "message_thread_id": "={{ $('Normalize Topic Lookup').item.json.topicId }}",
+          "parse_mode": "HTML",
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram Bot (замени credential)"
+        }
+      }
+    },
+    {
+      "id": "f30b79e9-6614-49a0-ae7d-4f9f4218f1c2",
+      "name": "Set Mode Human",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1820,
+        380
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "auto_glass_threads",
+          "cachedResultName": "auto_glass_threads"
+        },
+        "matchType": "anyCondition",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "customer_chat_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.customerChatId }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "mode": "human"
+          }
+        }
+      }
+    },
+    {
+      "id": "f163de0f-29ec-4515-b9f4-b350a99354e4",
+      "name": "Forward Staff Reply",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2080,
+        380
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $('Normalize Topic Lookup').item.json.customerChatId }}",
+        "text": "={{ String($('Normalize Topic Lookup').item.json.text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "additionalFields": {
+          "parse_mode": "HTML",
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram Bot (замени credential)"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If Is Private",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Is Private": {
+      "main": [
+        [
+          {
+            "node": "Get Thread By Chat",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Staff Message Valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Thread By Chat": {
+      "main": [
+        [
+          {
+            "node": "Normalize Thread Lookup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Thread Lookup": {
+      "main": [
+        [
+          {
+            "node": "If Need New Topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Need New Topic": {
+      "main": [
+        [
+          {
+            "node": "Create Forum Topic",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Thread State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Forum Topic": {
+      "main": [
+        [
+          {
+            "node": "Insert Thread Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Thread Row": {
+      "main": [
+        [
+          {
+            "node": "Thread State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Thread State": {
+      "main": [
+        [
+          {
+            "node": "If Mode Is Human",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mirror Customer To Topic": {
+      "main": [
+        []
+      ]
+    },
+    "If Mode Is Human": {
+      "main": [
+        [
+          {
+            "node": "Mirror Customer To Topic (Human)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mirror Customer To Topic",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Load Price List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mirror Customer To Topic (Human)": {
+      "main": [
+        []
+      ]
+    },
+    "Load Price List": {
+      "main": [
+        [
+          {
+            "node": "Prepare Price Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Price Context": {
+      "main": [
+        [
+          {
+            "node": "Ask LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ask LLM",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask LLM": {
+      "main": [
+        [
+          {
+            "node": "Parse LLM Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse LLM Output": {
+      "main": [
+        [
+          {
+            "node": "Update Thread After Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Thread After Reply": {
+      "main": [
+        [
+          {
+            "node": "Reply To Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply To Customer": {
+      "main": [
+        [
+          {
+            "node": "Mirror LLM Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mirror LLM Answer": {
+      "main": [
+        [
+          {
+            "node": "If Escalate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Escalate": {
+      "main": [
+        [
+          {
+            "node": "Post Escalation Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Staff Message Valid": {
+      "main": [
+        [
+          {
+            "node": "Get Thread By Topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Thread By Topic": {
+      "main": [
+        [
+          {
+            "node": "Normalize Topic Lookup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Topic Lookup": {
+      "main": [
+        [
+          {
+            "node": "If Thread Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Thread Found": {
+      "main": [
+        [
+          {
+            "node": "If Is Ai Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Is Ai Command": {
+      "main": [
+        [
+          {
+            "node": "Set Mode Ai",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Mode Human",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Mode Ai": {
+      "main": [
+        [
+          {
+            "node": "Confirm Ai Resumed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Mode Human": {
+      "main": [
+        [
+          {
+            "node": "Forward Staff Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}
