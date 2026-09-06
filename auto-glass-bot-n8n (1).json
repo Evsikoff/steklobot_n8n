@@ -1,9 +1,9 @@
 {
-  "name": "Автостекло — бот + прайс Google Sheets",
+  "name": "\u0410\u0432\u0442\u043e\u0441\u0442\u0435\u043a\u043b\u043e \u2014 \u0431\u043e\u0442 + \u043f\u0440\u0430\u0439\u0441 Google Sheets",
   "nodes": [
     {
       "id": "a187a025-07d0-4e28-9bd9-9ff8f49c4b1e",
-      "name": "Telegram Trigger",
+      "name": "\u0422\u0440\u0438\u0433\u0433\u0435\u0440 Telegram",
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
@@ -19,13 +19,15 @@
       "credentials": {
         "telegramApi": {
           "id": "1",
-          "name": "Telegram Bot (замени credential)"
+          "name": "Telegram Bot (\u0437\u0430\u043c\u0435\u043d\u0438 credential)"
         }
-      }
+      },
+      "notes": "\u0421\u0440\u0430\u0431\u0430\u0442\u044b\u0432\u0430\u0435\u0442 \u043d\u0430 \u043d\u043e\u0432\u044b\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f",
+      "notesInFlow": true
     },
     {
       "id": "0667d22c-9000-485b-b416-dffeb0e1682d",
-      "name": "If Is Private",
+      "name": "\u0415\u0441\u043b\u0438 \u043f\u0440\u0438\u0432\u0430\u0442\u043d\u044b\u0439 \u0447\u0430\u0442",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
@@ -52,11 +54,13 @@
           ],
           "combinator": "and"
         }
-      }
+      },
+      "notes": "\u041f\u0440\u043e\u0432\u0435\u0440\u044f\u0435\u0442, \u043f\u0440\u0438\u0448\u043b\u043e \u043b\u0438 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u0438\u0437 \u043b\u0438\u0447\u043d\u043e\u0433\u043e \u0447\u0430\u0442\u0430",
+      "notesInFlow": true
     },
     {
       "id": "776f3799-00f7-46b2-ac34-4a8026b3bf77",
-      "name": "Get Thread By Chat",
+      "name": "\u041f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0442\u0440\u0435\u0434 \u043f\u043e \u0447\u0430\u0442\u0443",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
@@ -85,11 +89,13 @@
         "returnAll": false,
         "limit": 1
       },
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "notes": "\u0418\u0449\u0435\u0442 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0439 \u0442\u0440\u0435\u0434 \u0432 \u0411\u0414 \u043f\u043e chat_id",
+      "notesInFlow": true
     },
     {
       "id": "4576b887-51b6-4655-a385-b179fad8302a",
-      "name": "Normalize Thread Lookup",
+      "name": "\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u0440\u0435\u0434\u0430",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -99,12 +105,14 @@
       "parameters": {
         "mode": "runOnceForAllItems",
         "language": "javaScript",
-        "jsCode": "const matches = $input.all();\nconst trigger = $('Telegram Trigger').first().json;\nconst chatId = String(trigger.message.chat.id);\nconst text = trigger.message.text || '';\nconst chat = trigger.message.chat;\nconst name = chat.first_name || chat.username || ('Клиент ' + chatId);\nconst row = matches.map(item => item.json).find(item => item && item.customer_chat_id != null);\nif (row) {\n  return [{ json: {\n    found: true,\n    customerChatId: chatId,\n    customerName: row.customer_name,\n    topicId: row.topic_id,\n    mode: row.mode,\n    history: row.history,\n    incomingText: text\n  } }];\n}\nreturn [{ json: {\n  found: false,\n  customerChatId: chatId,\n  customerName: name,\n  topicId: null,\n  mode: 'ai',\n  history: '[]',\n  incomingText: text\n} }];"
-      }
+        "jsCode": "const matches = $input.all();\nconst trigger = $('\u0422\u0440\u0438\u0433\u0433\u0435\u0440 Telegram').first().json;\nconst chatId = String(trigger.message.chat.id);\nconst text = trigger.message.text || '';\nconst chat = trigger.message.chat;\nconst name = chat.first_name || chat.username || ('\u041a\u043b\u0438\u0435\u043d\u0442 ' + chatId);\nconst row = matches.map(item => item.json).find(item => item && item.customer_chat_id != null);\nif (row) {\n  return [{ json: {\n    found: true,\n    customerChatId: chatId,\n    customerName: row.customer_name,\n    topicId: row.topic_id,\n    mode: row.mode,\n    history: row.history,\n    incomingText: text\n  } }];\n}\nreturn [{ json: {\n  found: false,\n  customerChatId: chatId,\n  customerName: name,\n  topicId: null,\n  mode: 'ai',\n  history: '[]',\n  incomingText: text\n} }];"
+      },
+      "notes": "\u041f\u043e\u0434\u0433\u043e\u0442\u0430\u0432\u043b\u0438\u0432\u0430\u0435\u0442 \u0434\u0430\u043d\u043d\u044b\u0435 \u0434\u043b\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0438 \u043d\u0430\u043b\u0438\u0447\u0438\u044f \u0442\u0440\u0435\u0434\u0430",
+      "notesInFlow": true
     },
     {
       "id": "217f4489-6271-4533-9ab5-7b4593236e9e",
-      "name": "If Need New Topic",
+      "name": "\u0415\u0441\u043b\u0438 \u043d\u0443\u0436\u0435\u043d \u043d\u043e\u0432\u044b\u0439 \u0442\u043e\u043f\u0438\u043a",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
@@ -131,11 +139,13 @@
           ],
           "combinator": "and"
         }
-      }
+      },
+      "notes": "\u041f\u0440\u043e\u0432\u0435\u0440\u044f\u0435\u0442, \u043d\u0443\u0436\u043d\u043e \u043b\u0438 \u0441\u043e\u0437\u0434\u0430\u0432\u0430\u0442\u044c \u043d\u043e\u0432\u044b\u0439 \u0442\u043e\u043f\u0438\u043a \u0432 \u0433\u0440\u0443\u043f\u043f\u0435",
+      "notesInFlow": true
     },
     {
       "id": "ac88a5b7-445b-4f46-b0a5-6747cb7d48d7",
-      "name": "Create Forum Topic",
+      "name": "\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u0442\u043e\u043f\u0438\u043a \u043d\u0430 \u0444\u043e\u0440\u0443\u043c\u0435",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -148,12 +158,14 @@
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ chat_id: '-1003881399417', name: ($('Normalize Thread Lookup').item.json.customerName + ' #' + $('Normalize Thread Lookup').item.json.customerChatId) }) }}"
-      }
+        "jsonBody": "={{ JSON.stringify({ chat_id: '-1003881399417', name: ($('\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u0440\u0435\u0434\u0430').item.json.customerName + ' #' + $('\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u0440\u0435\u0434\u0430').item.json.customerChatId) }) }}"
+      },
+      "notes": "\u0421\u043e\u0437\u0434\u0430\u0435\u0442 \u043d\u043e\u0432\u044b\u0439 \u0442\u043e\u043f\u0438\u043a \u0432 Telegram \u0433\u0440\u0443\u043f\u043f\u0435 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0438",
+      "notesInFlow": true
     },
     {
       "id": "bab5f04e-e94d-4bbe-b9e8-c1237a2b8e72",
-      "name": "Insert Thread Row",
+      "name": "\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0441\u0442\u0440\u043e\u043a\u0443 \u0442\u0440\u0435\u0434\u0430",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
@@ -180,11 +192,13 @@
             "history": "[]"
           }
         }
-      }
+      },
+      "notes": "\u0421\u043e\u0445\u0440\u0430\u043d\u044f\u0435\u0442 \u043d\u043e\u0432\u044b\u0439 \u0442\u0440\u0435\u0434 \u0432 \u0411\u0414",
+      "notesInFlow": true
     },
     {
       "id": "7114937e-6761-4fc5-bb12-2556d99bbe63",
-      "name": "Thread State",
+      "name": "\u0421\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u0435 \u0442\u0440\u0435\u0434\u0430",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -194,12 +208,14 @@
       "parameters": {
         "mode": "runOnceForAllItems",
         "language": "javaScript",
-        "jsCode": "const j = $input.first().json;\nconst base = $('Normalize Thread Lookup').first().json;\nconst customerChatId = j.customer_chat_id ?? j.customerChatId ?? base.customerChatId;\nconst topicId = j.topic_id ?? j.topicId ?? base.topicId;\nconst mode = j.mode ?? base.mode;\nconst history = j.history ?? base.history;\nconst customerName = j.customer_name ?? j.customerName ?? base.customerName;\nreturn [{ json: { customerChatId, customerName, topicId, mode, history, incomingText: base.incomingText } }];"
-      }
+        "jsCode": "const j = $input.first().json;\nconst base = $('\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u0440\u0435\u0434\u0430').first().json;\nconst customerChatId = j.customer_chat_id ?? j.customerChatId ?? base.customerChatId;\nconst topicId = j.topic_id ?? j.topicId ?? base.topicId;\nconst mode = j.mode ?? base.mode;\nconst history = j.history ?? base.history;\nconst customerName = j.customer_name ?? j.customerName ?? base.customerName;\nreturn [{ json: { customerChatId, customerName, topicId, mode, history, incomingText: base.incomingText } }];"
+      },
+      "notes": "\u0424\u043e\u0440\u043c\u0438\u0440\u0443\u0435\u0442 \u0442\u0435\u043a\u0443\u0449\u0435\u0435 \u0441\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u0435 (\u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442) \u0434\u043b\u044f \u043e\u0431\u0440\u0430\u0431\u043e\u0442\u043a\u0438",
+      "notesInFlow": true
     },
     {
       "id": "42ddd08e-9756-4acc-942b-25f88ec14a25",
-      "name": "Mirror Customer To Topic",
+      "name": "\u0414\u0443\u0431\u043b\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043a\u043b\u0438\u0435\u043d\u0442\u0430 \u0432 \u0442\u043e\u043f\u0438\u043a",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
@@ -210,7 +226,7 @@
         "resource": "message",
         "operation": "sendMessage",
         "chatId": "-1003881399417",
-        "text": "=👤 Клиент: {{ String($json.incomingText || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "text": "=\ud83d\udc64 \u041a\u043b\u0438\u0435\u043d\u0442: {{ String($json.incomingText || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
         "additionalFields": {
           "message_thread_id": "={{ $json.topicId }}",
           "parse_mode": "HTML",
@@ -220,13 +236,15 @@
       "credentials": {
         "telegramApi": {
           "id": "1",
-          "name": "Telegram Bot (замени credential)"
+          "name": "Telegram Bot (\u0437\u0430\u043c\u0435\u043d\u0438 credential)"
         }
-      }
+      },
+      "notes": "\u041f\u0435\u0440\u0435\u0441\u044b\u043b\u0430\u0435\u0442 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u043a\u043b\u0438\u0435\u043d\u0442\u0430 \u0432 \u0442\u043e\u043f\u0438\u043a (\u0434\u043b\u044f \u0418\u0418)",
+      "notesInFlow": true
     },
     {
       "id": "43a81f87-c6a6-4eb2-a29f-f3655b229af5",
-      "name": "If Mode Is Human",
+      "name": "\u0415\u0441\u043b\u0438 \u0440\u0435\u0436\u0438\u043c \u0427\u0435\u043b\u043e\u0432\u0435\u043a",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
@@ -253,11 +271,13 @@
           ],
           "combinator": "and"
         }
-      }
+      },
+      "notes": "\u041f\u0440\u043e\u0432\u0435\u0440\u044f\u0435\u0442, \u043d\u0430\u0445\u043e\u0434\u0438\u0442\u0441\u044f \u043b\u0438 \u0431\u043e\u0442 \u0432 \u0440\u0435\u0436\u0438\u043c\u0435 \u043e\u0431\u0449\u0435\u043d\u0438\u044f \u0441 \u0447\u0435\u043b\u043e\u0432\u0435\u043a\u043e\u043c",
+      "notesInFlow": true
     },
     {
       "id": "a1e44340-0c7d-4e78-9cf9-f13bb88857e2",
-      "name": "Mirror Customer To Topic (Human)",
+      "name": "\u0414\u0443\u0431\u043b\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043a\u043b\u0438\u0435\u043d\u0442\u0430 \u0432 \u0442\u043e\u043f\u0438\u043a (\u0427\u0435\u043b\u043e\u0432\u0435\u043a)",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
@@ -268,7 +288,7 @@
         "resource": "message",
         "operation": "sendMessage",
         "chatId": "-1003881399417",
-        "text": "=👤 Клиент: {{ String($json.incomingText || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "text": "=\ud83d\udc64 \u041a\u043b\u0438\u0435\u043d\u0442: {{ String($json.incomingText || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
         "additionalFields": {
           "message_thread_id": "={{ $json.topicId }}",
           "parse_mode": "HTML",
@@ -278,13 +298,15 @@
       "credentials": {
         "telegramApi": {
           "id": "1",
-          "name": "Telegram Bot (замени credential)"
+          "name": "Telegram Bot (\u0437\u0430\u043c\u0435\u043d\u0438 credential)"
         }
-      }
+      },
+      "notes": "\u041f\u0435\u0440\u0435\u0441\u044b\u043b\u0430\u0435\u0442 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u043a\u043b\u0438\u0435\u043d\u0442\u0430 \u0432 \u0442\u043e\u043f\u0438\u043a (\u0434\u043b\u044f \u0427\u0435\u043b\u043e\u0432\u0435\u043a\u0430)",
+      "notesInFlow": true
     },
     {
       "id": "1c620c91-76c3-4b50-90bd-a683ad77a860",
-      "name": "Load Price List",
+      "name": "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u043f\u0440\u0430\u0439\u0441-\u043b\u0438\u0441\u0442",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -305,11 +327,13 @@
       "retryOnFail": true,
       "maxTries": 3,
       "waitBetweenTries": 3000,
-      "onError": "continueRegularOutput"
+      "onError": "continueRegularOutput",
+      "notes": "\u0421\u043a\u0430\u0447\u0438\u0432\u0430\u0435\u0442 \u0430\u043a\u0442\u0443\u0430\u043b\u044c\u043d\u044b\u0439 \u043f\u0440\u0430\u0439\u0441-\u043b\u0438\u0441\u0442 \u0438\u0437 Google \u0422\u0430\u0431\u043b\u0438\u0446",
+      "notesInFlow": true
     },
     {
       "id": "0b47d2d0-23c1-42c8-b82a-bf82c53fb24a",
-      "name": "Prepare Price Context",
+      "name": "\u041f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u0438\u0442\u044c \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442 \u043f\u0440\u0430\u0439\u0441\u0430",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -319,12 +343,14 @@
       "parameters": {
         "mode": "runOnceForAllItems",
         "language": "javaScript",
-        "jsCode": "const input = $input.first().json;\nconst csv = typeof input.priceCsv === 'string' ? input.priceCsv : '';\n\nfunction parseCsv(text) {\n  const rows = [];\n  let row = [];\n  let field = '';\n  let quoted = false;\n  for (let i = 0; i < text.length; i++) {\n    const ch = text[i];\n    if (quoted) {\n      if (ch === '\"' && text[i + 1] === '\"') { field += '\"'; i++; }\n      else if (ch === '\"') quoted = false;\n      else field += ch;\n    } else if (ch === '\"') quoted = true;\n    else if (ch === ',') { row.push(field); field = ''; }\n    else if (ch === '\\n') { row.push(field); rows.push(row); row = []; field = ''; }\n    else if (ch !== '\\r') field += ch;\n  }\n  if (field.length || row.length) { row.push(field); rows.push(row); }\n  return rows;\n}\n\nconst parsedRows = csv ? parseCsv(csv) : [];\nconst headers = (parsedRows.shift() || []).map((value, index) => String(value).trim().replace(index === 0 ? /^\\uFEFF/ : /$^/, ''));\nconst records = parsedRows\n  .filter(cells => cells.some(value => String(value).trim() !== ''))\n  .map(cells => Object.fromEntries(headers.map((header, index) => [header, String(cells[index] ?? '').trim()])));\nconst priceRows = records\n  .filter(row => row.id && row.make && row.model)\n  .map(row => ({\n    id: String(row.id),\n    make: row.make,\n    model: row.model,\n    year_from: Number(row.year_from),\n    year_to: Number(row.year_to),\n    glass_type: row.glass_type,\n    features: row.features,\n    brand: row.brand,\n    price_glass: Number(row.price_glass),\n    price_work: Number(row.price_work),\n    in_stock: row.in_stock\n  }));\nconst thread = $('Thread State').first().json;\nreturn [{ json: {\n  ...thread,\n  priceListAvailable: priceRows.length > 0,\n  priceRows,\n  priceListJson: JSON.stringify(priceRows)\n} }];"
-      }
+        "jsCode": "const input = $input.first().json;\nconst csv = typeof input.priceCsv === 'string' ? input.priceCsv : '';\n\nfunction parseCsv(text) {\n  const rows = [];\n  let row = [];\n  let field = '';\n  let quoted = false;\n  for (let i = 0; i < text.length; i++) {\n    const ch = text[i];\n    if (quoted) {\n      if (ch === '\"' && text[i + 1] === '\"') { field += '\"'; i++; }\n      else if (ch === '\"') quoted = false;\n      else field += ch;\n    } else if (ch === '\"') quoted = true;\n    else if (ch === ',') { row.push(field); field = ''; }\n    else if (ch === '\\n') { row.push(field); rows.push(row); row = []; field = ''; }\n    else if (ch !== '\\r') field += ch;\n  }\n  if (field.length || row.length) { row.push(field); rows.push(row); }\n  return rows;\n}\n\nconst parsedRows = csv ? parseCsv(csv) : [];\nconst headers = (parsedRows.shift() || []).map((value, index) => String(value).trim().replace(index === 0 ? /^\\uFEFF/ : /$^/, ''));\nconst records = parsedRows\n  .filter(cells => cells.some(value => String(value).trim() !== ''))\n  .map(cells => Object.fromEntries(headers.map((header, index) => [header, String(cells[index] ?? '').trim()])));\nconst priceRows = records\n  .filter(row => row.id && row.make && row.model)\n  .map(row => ({\n    id: String(row.id),\n    make: row.make,\n    model: row.model,\n    year_from: Number(row.year_from),\n    year_to: Number(row.year_to),\n    glass_type: row.glass_type,\n    features: row.features,\n    brand: row.brand,\n    price_glass: Number(row.price_glass),\n    price_work: Number(row.price_work),\n    in_stock: row.in_stock\n  }));\nconst thread = $('\u0421\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u0435 \u0442\u0440\u0435\u0434\u0430').first().json;\nreturn [{ json: {\n  ...thread,\n  priceListAvailable: priceRows.length > 0,\n  priceRows,\n  priceListJson: JSON.stringify(priceRows)\n} }];"
+      },
+      "notes": "\u041f\u0430\u0440\u0441\u0438\u0442 \u043f\u0440\u0430\u0439\u0441-\u043b\u0438\u0441\u0442 \u0438 \u043f\u043e\u0434\u0433\u043e\u0442\u0430\u0432\u043b\u0438\u0432\u0430\u0435\u0442 \u0434\u0430\u043d\u043d\u044b\u0435 \u0434\u043b\u044f \u0418\u0418",
+      "notesInFlow": true
     },
     {
       "id": "6a3477ff-2012-4cfd-9bc3-aa73beb6f504",
-      "name": "Gemini Model",
+      "name": "\u041c\u043e\u0434\u0435\u043b\u044c Gemini",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
@@ -341,13 +367,15 @@
       "credentials": {
         "googlePalmApi": {
           "id": "2",
-          "name": "Google Gemini (замени credential)"
+          "name": "Google Gemini (\u0437\u0430\u043c\u0435\u043d\u0438 credential)"
         }
-      }
+      },
+      "notes": "\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u043c\u043e\u0434\u0435\u043b\u0438 Gemini 3.7",
+      "notesInFlow": true
     },
     {
       "id": "08036c52-acc7-42b7-bc73-ff0bd7dc199a",
-      "name": "Ask LLM",
+      "name": "\u0421\u043f\u0440\u043e\u0441\u0438\u0442\u044c \u0418\u0418",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
@@ -356,16 +384,18 @@
       ],
       "parameters": {
         "promptType": "define",
-        "text": "=Ты — ассистент службы замены автостёкол в Telegram. Отвечай по-русски, дружелюбно и кратко. Всегда учитывай всю историю диалога: короткие ответы клиента вроде \"для той и для той\", \"с датчиком дождя\" или \"обе\" относятся к вариантам, обсуждавшимся выше.\n\nНиже передан актуальный прайс из Google Sheets. Это ЕДИНСТВЕННЫЙ допустимый источник цен. Никогда не придумывай цену, наличие, бренд или характеристики и не используй знания вне прайса.\n\nПравила поиска:\n1. Для подбора нужны марка, модель, год автомобиля и тип стекла. Лобовое = Front, заднее = Rear, боковое = Side.\n2. Год должен входить в диапазон year_from–year_to включительно. Марку и модель сопоставляй без учёта регистра. Допускай очевидную русскую транслитерацию и опечатки: Хендай/Хундай = Hyundai, Солярис/солярий = Solaris.\n3. Сначала найди все строки, подходящие по марке, модели, году и типу стекла. Различия в features и brand означают разные варианты, а не отсутствие результата.\n4. Если найдено от 1 до 5 вариантов, НЕ проси клиента выбрать комплектацию до показа цены. Верни все их id в matchedPriceIds и lookupStatus = \"found\" для одного варианта либо \"found_multiple\" для нескольких. Workflow сам покажет каждый вариант и точные цены.\n5. Если клиент просит \"все варианты\", \"для той и для той\", \"какие есть цены\" или аналогично, обязательно верни все подходящие варианты, если их не больше пяти.\n6. Задавай один конкретный уточняющий вопрос и возвращай lookupStatus = \"need_details\" только если не хватает марки, модели, года или типа стекла, либо подходящих вариантов больше пяти.\n7. Если клиент сообщил достаточно данных, но ни одной строки нет, верни lookupStatus = \"not_found\" и передай менеджеру.\n8. Если цена не запрашивается и подбор не выполняется, верни lookupStatus = \"not_requested\".\n9. Когда клиент явно готов оформить заказ или спрашивает о записи, верни escalate.reason = \"deal_ready\".\n10. При lookupStatus = \"not_found\" верни escalate.reason = \"price_not_found\".\n11. Самостоятельно не пиши числа цен в reply: цены сформирует workflow строго из выбранных строк.\n\nВерни СТРОГО один JSON-объект без markdown и дополнительного текста:\n{\"reply\":\"короткий ответ или уточняющий вопрос\",\"lookupStatus\":\"not_requested|need_details|found|found_multiple|not_found\",\"matchedPriceIds\":[],\"escalate\":null}\nПример нескольких вариантов:\n{\"reply\":\"Нашёл несколько подходящих вариантов.\",\"lookupStatus\":\"found_multiple\",\"matchedPriceIds\":[\"11\",\"17\"],\"escalate\":null}\nПри передаче менеджеру:\n{\"reply\":\"\",\"lookupStatus\":\"not_found\",\"matchedPriceIds\":[],\"escalate\":{\"reason\":\"price_not_found\",\"summary\":\"что искал клиент и почему строка не найдена\"}}\n\nПрайс доступен: {{ $json.priceListAvailable }}\nПрайс (JSON): {{ $json.priceListJson }}\n\nИстория переписки (JSON): {{ $json.history }}\nНовое сообщение клиента: {{ $json.incomingText }}"
+        "text": "=\u0422\u044b \u2014 \u0430\u0441\u0441\u0438\u0441\u0442\u0435\u043d\u0442 \u0441\u043b\u0443\u0436\u0431\u044b \u0437\u0430\u043c\u0435\u043d\u044b \u0430\u0432\u0442\u043e\u0441\u0442\u0451\u043a\u043e\u043b \u0432 Telegram. \u041e\u0442\u0432\u0435\u0447\u0430\u0439 \u043f\u043e-\u0440\u0443\u0441\u0441\u043a\u0438, \u0434\u0440\u0443\u0436\u0435\u043b\u044e\u0431\u043d\u043e \u0438 \u043a\u0440\u0430\u0442\u043a\u043e. \u0412\u0441\u0435\u0433\u0434\u0430 \u0443\u0447\u0438\u0442\u044b\u0432\u0430\u0439 \u0432\u0441\u044e \u0438\u0441\u0442\u043e\u0440\u0438\u044e \u0434\u0438\u0430\u043b\u043e\u0433\u0430: \u043a\u043e\u0440\u043e\u0442\u043a\u0438\u0435 \u043e\u0442\u0432\u0435\u0442\u044b \u043a\u043b\u0438\u0435\u043d\u0442\u0430 \u0432\u0440\u043e\u0434\u0435 \"\u0434\u043b\u044f \u0442\u043e\u0439 \u0438 \u0434\u043b\u044f \u0442\u043e\u0439\", \"\u0441 \u0434\u0430\u0442\u0447\u0438\u043a\u043e\u043c \u0434\u043e\u0436\u0434\u044f\" \u0438\u043b\u0438 \"\u043e\u0431\u0435\" \u043e\u0442\u043d\u043e\u0441\u044f\u0442\u0441\u044f \u043a \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u0430\u043c, \u043e\u0431\u0441\u0443\u0436\u0434\u0430\u0432\u0448\u0438\u043c\u0441\u044f \u0432\u044b\u0448\u0435.\n\n\u041d\u0438\u0436\u0435 \u043f\u0435\u0440\u0435\u0434\u0430\u043d \u0430\u043a\u0442\u0443\u0430\u043b\u044c\u043d\u044b\u0439 \u043f\u0440\u0430\u0439\u0441 \u0438\u0437 Google Sheets. \u042d\u0442\u043e \u0415\u0414\u0418\u041d\u0421\u0422\u0412\u0415\u041d\u041d\u042b\u0419 \u0434\u043e\u043f\u0443\u0441\u0442\u0438\u043c\u044b\u0439 \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a \u0446\u0435\u043d. \u041d\u0438\u043a\u043e\u0433\u0434\u0430 \u043d\u0435 \u043f\u0440\u0438\u0434\u0443\u043c\u044b\u0432\u0430\u0439 \u0446\u0435\u043d\u0443, \u043d\u0430\u043b\u0438\u0447\u0438\u0435, \u0431\u0440\u0435\u043d\u0434 \u0438\u043b\u0438 \u0445\u0430\u0440\u0430\u043a\u0442\u0435\u0440\u0438\u0441\u0442\u0438\u043a\u0438 \u0438 \u043d\u0435 \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0439 \u0437\u043d\u0430\u043d\u0438\u044f \u0432\u043d\u0435 \u043f\u0440\u0430\u0439\u0441\u0430.\n\n\u041f\u0440\u0430\u0432\u0438\u043b\u0430 \u043f\u043e\u0438\u0441\u043a\u0430:\n1. \u0414\u043b\u044f \u043f\u043e\u0434\u0431\u043e\u0440\u0430 \u043d\u0443\u0436\u043d\u044b \u043c\u0430\u0440\u043a\u0430, \u043c\u043e\u0434\u0435\u043b\u044c, \u0433\u043e\u0434 \u0430\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b\u044f \u0438 \u0442\u0438\u043f \u0441\u0442\u0435\u043a\u043b\u0430. \u041b\u043e\u0431\u043e\u0432\u043e\u0435 = Front, \u0437\u0430\u0434\u043d\u0435\u0435 = Rear, \u0431\u043e\u043a\u043e\u0432\u043e\u0435 = Side.\n2. \u0413\u043e\u0434 \u0434\u043e\u043b\u0436\u0435\u043d \u0432\u0445\u043e\u0434\u0438\u0442\u044c \u0432 \u0434\u0438\u0430\u043f\u0430\u0437\u043e\u043d year_from\u2013year_to \u0432\u043a\u043b\u044e\u0447\u0438\u0442\u0435\u043b\u044c\u043d\u043e. \u041c\u0430\u0440\u043a\u0443 \u0438 \u043c\u043e\u0434\u0435\u043b\u044c \u0441\u043e\u043f\u043e\u0441\u0442\u0430\u0432\u043b\u044f\u0439 \u0431\u0435\u0437 \u0443\u0447\u0451\u0442\u0430 \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430. \u0414\u043e\u043f\u0443\u0441\u043a\u0430\u0439 \u043e\u0447\u0435\u0432\u0438\u0434\u043d\u0443\u044e \u0440\u0443\u0441\u0441\u043a\u0443\u044e \u0442\u0440\u0430\u043d\u0441\u043b\u0438\u0442\u0435\u0440\u0430\u0446\u0438\u044e \u0438 \u043e\u043f\u0435\u0447\u0430\u0442\u043a\u0438: \u0425\u0435\u043d\u0434\u0430\u0439/\u0425\u0443\u043d\u0434\u0430\u0439 = Hyundai, \u0421\u043e\u043b\u044f\u0440\u0438\u0441/\u0441\u043e\u043b\u044f\u0440\u0438\u0439 = Solaris.\n3. \u0421\u043d\u0430\u0447\u0430\u043b\u0430 \u043d\u0430\u0439\u0434\u0438 \u0432\u0441\u0435 \u0441\u0442\u0440\u043e\u043a\u0438, \u043f\u043e\u0434\u0445\u043e\u0434\u044f\u0449\u0438\u0435 \u043f\u043e \u043c\u0430\u0440\u043a\u0435, \u043c\u043e\u0434\u0435\u043b\u0438, \u0433\u043e\u0434\u0443 \u0438 \u0442\u0438\u043f\u0443 \u0441\u0442\u0435\u043a\u043b\u0430. \u0420\u0430\u0437\u043b\u0438\u0447\u0438\u044f \u0432 features \u0438 brand \u043e\u0437\u043d\u0430\u0447\u0430\u044e\u0442 \u0440\u0430\u0437\u043d\u044b\u0435 \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u044b, \u0430 \u043d\u0435 \u043e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0438\u0435 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u0430.\n4. \u0415\u0441\u043b\u0438 \u043d\u0430\u0439\u0434\u0435\u043d\u043e \u043e\u0442 1 \u0434\u043e 5 \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u043e\u0432, \u041d\u0415 \u043f\u0440\u043e\u0441\u0438 \u043a\u043b\u0438\u0435\u043d\u0442\u0430 \u0432\u044b\u0431\u0440\u0430\u0442\u044c \u043a\u043e\u043c\u043f\u043b\u0435\u043a\u0442\u0430\u0446\u0438\u044e \u0434\u043e \u043f\u043e\u043a\u0430\u0437\u0430 \u0446\u0435\u043d\u044b. \u0412\u0435\u0440\u043d\u0438 \u0432\u0441\u0435 \u0438\u0445 id \u0432 matchedPriceIds \u0438 lookupStatus = \"found\" \u0434\u043b\u044f \u043e\u0434\u043d\u043e\u0433\u043e \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u0430 \u043b\u0438\u0431\u043e \"found_multiple\" \u0434\u043b\u044f \u043d\u0435\u0441\u043a\u043e\u043b\u044c\u043a\u0438\u0445. Workflow \u0441\u0430\u043c \u043f\u043e\u043a\u0430\u0436\u0435\u0442 \u043a\u0430\u0436\u0434\u044b\u0439 \u0432\u0430\u0440\u0438\u0430\u043d\u0442 \u0438 \u0442\u043e\u0447\u043d\u044b\u0435 \u0446\u0435\u043d\u044b.\n5. \u0415\u0441\u043b\u0438 \u043a\u043b\u0438\u0435\u043d\u0442 \u043f\u0440\u043e\u0441\u0438\u0442 \"\u0432\u0441\u0435 \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u044b\", \"\u0434\u043b\u044f \u0442\u043e\u0439 \u0438 \u0434\u043b\u044f \u0442\u043e\u0439\", \"\u043a\u0430\u043a\u0438\u0435 \u0435\u0441\u0442\u044c \u0446\u0435\u043d\u044b\" \u0438\u043b\u0438 \u0430\u043d\u0430\u043b\u043e\u0433\u0438\u0447\u043d\u043e, \u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u043e \u0432\u0435\u0440\u043d\u0438 \u0432\u0441\u0435 \u043f\u043e\u0434\u0445\u043e\u0434\u044f\u0449\u0438\u0435 \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u044b, \u0435\u0441\u043b\u0438 \u0438\u0445 \u043d\u0435 \u0431\u043e\u043b\u044c\u0448\u0435 \u043f\u044f\u0442\u0438.\n6. \u0417\u0430\u0434\u0430\u0432\u0430\u0439 \u043e\u0434\u0438\u043d \u043a\u043e\u043d\u043a\u0440\u0435\u0442\u043d\u044b\u0439 \u0443\u0442\u043e\u0447\u043d\u044f\u044e\u0449\u0438\u0439 \u0432\u043e\u043f\u0440\u043e\u0441 \u0438 \u0432\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u0439 lookupStatus = \"need_details\" \u0442\u043e\u043b\u044c\u043a\u043e \u0435\u0441\u043b\u0438 \u043d\u0435 \u0445\u0432\u0430\u0442\u0430\u0435\u0442 \u043c\u0430\u0440\u043a\u0438, \u043c\u043e\u0434\u0435\u043b\u0438, \u0433\u043e\u0434\u0430 \u0438\u043b\u0438 \u0442\u0438\u043f\u0430 \u0441\u0442\u0435\u043a\u043b\u0430, \u043b\u0438\u0431\u043e \u043f\u043e\u0434\u0445\u043e\u0434\u044f\u0449\u0438\u0445 \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u043e\u0432 \u0431\u043e\u043b\u044c\u0448\u0435 \u043f\u044f\u0442\u0438.\n7. \u0415\u0441\u043b\u0438 \u043a\u043b\u0438\u0435\u043d\u0442 \u0441\u043e\u043e\u0431\u0449\u0438\u043b \u0434\u043e\u0441\u0442\u0430\u0442\u043e\u0447\u043d\u043e \u0434\u0430\u043d\u043d\u044b\u0445, \u043d\u043e \u043d\u0438 \u043e\u0434\u043d\u043e\u0439 \u0441\u0442\u0440\u043e\u043a\u0438 \u043d\u0435\u0442, \u0432\u0435\u0440\u043d\u0438 lookupStatus = \"not_found\" \u0438 \u043f\u0435\u0440\u0435\u0434\u0430\u0439 \u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0443.\n8. \u0415\u0441\u043b\u0438 \u0446\u0435\u043d\u0430 \u043d\u0435 \u0437\u0430\u043f\u0440\u0430\u0448\u0438\u0432\u0430\u0435\u0442\u0441\u044f \u0438 \u043f\u043e\u0434\u0431\u043e\u0440 \u043d\u0435 \u0432\u044b\u043f\u043e\u043b\u043d\u044f\u0435\u0442\u0441\u044f, \u0432\u0435\u0440\u043d\u0438 lookupStatus = \"not_requested\".\n9. \u041a\u043e\u0433\u0434\u0430 \u043a\u043b\u0438\u0435\u043d\u0442 \u044f\u0432\u043d\u043e \u0433\u043e\u0442\u043e\u0432 \u043e\u0444\u043e\u0440\u043c\u0438\u0442\u044c \u0437\u0430\u043a\u0430\u0437 \u0438\u043b\u0438 \u0441\u043f\u0440\u0430\u0448\u0438\u0432\u0430\u0435\u0442 \u043e \u0437\u0430\u043f\u0438\u0441\u0438, \u0432\u0435\u0440\u043d\u0438 escalate.reason = \"deal_ready\".\n10. \u041f\u0440\u0438 lookupStatus = \"not_found\" \u0432\u0435\u0440\u043d\u0438 escalate.reason = \"price_not_found\".\n11. \u0421\u0430\u043c\u043e\u0441\u0442\u043e\u044f\u0442\u0435\u043b\u044c\u043d\u043e \u043d\u0435 \u043f\u0438\u0448\u0438 \u0447\u0438\u0441\u043b\u0430 \u0446\u0435\u043d \u0432 reply: \u0446\u0435\u043d\u044b \u0441\u0444\u043e\u0440\u043c\u0438\u0440\u0443\u0435\u0442 workflow \u0441\u0442\u0440\u043e\u0433\u043e \u0438\u0437 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0445 \u0441\u0442\u0440\u043e\u043a.\n\n\u0412\u0435\u0440\u043d\u0438 \u0421\u0422\u0420\u041e\u0413\u041e \u043e\u0434\u0438\u043d JSON-\u043e\u0431\u044a\u0435\u043a\u0442 \u0431\u0435\u0437 markdown \u0438 \u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u043e\u0433\u043e \u0442\u0435\u043a\u0441\u0442\u0430:\n{\"reply\":\"\u043a\u043e\u0440\u043e\u0442\u043a\u0438\u0439 \u043e\u0442\u0432\u0435\u0442 \u0438\u043b\u0438 \u0443\u0442\u043e\u0447\u043d\u044f\u044e\u0449\u0438\u0439 \u0432\u043e\u043f\u0440\u043e\u0441\",\"lookupStatus\":\"not_requested|need_details|found|found_multiple|not_found\",\"matchedPriceIds\":[],\"escalate\":null}\n\u041f\u0440\u0438\u043c\u0435\u0440 \u043d\u0435\u0441\u043a\u043e\u043b\u044c\u043a\u0438\u0445 \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u043e\u0432:\n{\"reply\":\"\u041d\u0430\u0448\u0451\u043b \u043d\u0435\u0441\u043a\u043e\u043b\u044c\u043a\u043e \u043f\u043e\u0434\u0445\u043e\u0434\u044f\u0449\u0438\u0445 \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u043e\u0432.\",\"lookupStatus\":\"found_multiple\",\"matchedPriceIds\":[\"11\",\"17\"],\"escalate\":null}\n\u041f\u0440\u0438 \u043f\u0435\u0440\u0435\u0434\u0430\u0447\u0435 \u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0443:\n{\"reply\":\"\",\"lookupStatus\":\"not_found\",\"matchedPriceIds\":[],\"escalate\":{\"reason\":\"price_not_found\",\"summary\":\"\u0447\u0442\u043e \u0438\u0441\u043a\u0430\u043b \u043a\u043b\u0438\u0435\u043d\u0442 \u0438 \u043f\u043e\u0447\u0435\u043c\u0443 \u0441\u0442\u0440\u043e\u043a\u0430 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u0430\"}}\n\n\u041f\u0440\u0430\u0439\u0441 \u0434\u043e\u0441\u0442\u0443\u043f\u0435\u043d: {{ $json.priceListAvailable }}\n\u041f\u0440\u0430\u0439\u0441 (JSON): {{ $json.priceListJson }}\n\n\u0418\u0441\u0442\u043e\u0440\u0438\u044f \u043f\u0435\u0440\u0435\u043f\u0438\u0441\u043a\u0438 (JSON): {{ $json.history }}\n\u041d\u043e\u0432\u043e\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u043a\u043b\u0438\u0435\u043d\u0442\u0430: {{ $json.incomingText }}"
       },
       "retryOnFail": true,
       "maxTries": 4,
       "waitBetweenTries": 5000,
-      "onError": "continueRegularOutput"
+      "onError": "continueRegularOutput",
+      "notes": "\u041e\u0442\u043f\u0440\u0430\u0432\u043b\u044f\u0435\u0442 \u0437\u0430\u043f\u0440\u043e\u0441 \u0418\u0418 \u0441 \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442\u043e\u043c \u043f\u0440\u0430\u0439\u0441\u0430 \u0438 \u0438\u0441\u0442\u043e\u0440\u0438\u0438",
+      "notesInFlow": true
     },
     {
       "id": "4b2bcf11-5e9f-40e0-80e4-eab7c49ef8ce",
-      "name": "Parse LLM Output",
+      "name": "\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -375,12 +405,14 @@
       "parameters": {
         "mode": "runOnceForAllItems",
         "language": "javaScript",
-        "jsCode": "const input = $input.first().json;\nconst raw = String(input.text || '').trim();\nconst context = $('Prepare Price Context').first().json;\nconst thread = $('Thread State').first().json;\nconst priceRows = Array.isArray(context.priceRows) ? context.priceRows : [];\nlet parsed;\ntry {\n  const match = raw.match(/\\{[\\s\\S]*\\}/);\n  parsed = JSON.parse(match ? match[0] : raw);\n} catch (e) {\n  parsed = null;\n}\n\nlet reply = parsed?.reply ? String(parsed.reply).trim() : '';\nlet escalate = parsed?.escalate || null;\nlet lookupStatus = parsed?.lookupStatus || 'not_requested';\nlet requestedIds = Array.isArray(parsed?.matchedPriceIds) ? parsed.matchedPriceIds : [];\nif (!requestedIds.length && parsed?.matchedPriceId != null) requestedIds = [parsed.matchedPriceId];\nrequestedIds = [...new Set(requestedIds.map(String))];\nlet matchedRows = [];\n\nconst money = value => Number(value).toLocaleString('ru-RU') + ' ₽';\nconst typeName = value => ({ Front: 'лобовое', Rear: 'заднее', Side: 'боковое' }[value] || value);\nconst featureNames = value => {\n  const names = { 'None': 'без доп. опций', 'Rain sensor': 'датчик дождя', 'Heating': 'обогрев', 'Camera': 'камера', 'HUD': 'HUD', 'Solar': 'солнцезащитное' };\n  return String(value || 'None').split(',').map(item => names[item.trim()] || item.trim()).join(', ');\n};\n\nif (!parsed) {\n  reply = 'Извините, сейчас не удалось обработать запрос. Подключаю менеджера — он поможет с подбором и ценой.';\n  escalate = { reason: 'ai_unavailable', summary: 'Gemini не вернул корректный JSON. Требуется ответ менеджера.' };\n} else if (!context.priceListAvailable && lookupStatus !== 'not_requested') {\n  lookupStatus = 'not_found';\n  reply = 'Извините, сейчас не удалось получить актуальный прайс. Подключаю менеджера — он уточнит цену.';\n  escalate = { reason: 'price_source_unavailable', summary: 'Не удалось загрузить прайс Google Sheets.' };\n} else if (lookupStatus === 'found' || lookupStatus === 'found_multiple') {\n  matchedRows = requestedIds.map(id => priceRows.find(row => String(row.id) === id)).filter(Boolean);\n  if (!matchedRows.length) {\n    lookupStatus = 'not_found';\n    reply = 'Извините, я не нашёл подходящую цену в прайс-листе. Подключаю менеджера — он уточнит стоимость.';\n    escalate = { reason: 'price_not_found', summary: 'Модель не указала существующие id строк прайса для запроса: ' + thread.incomingText };\n  } else if (matchedRows.length > 5) {\n    lookupStatus = 'need_details';\n    matchedRows = [];\n    reply = 'Нашлось много вариантов. Уточните, пожалуйста, комплектацию стекла: наличие датчика дождя, обогрева, камеры или HUD.';\n    escalate = null;\n  } else {\n    if (escalate && ['price_not_found', 'price_source_unavailable'].includes(escalate.reason)) escalate = null;\n    const lines = matchedRows.map((row, index) => {\n      const total = Number(row.price_glass) + Number(row.price_work);\n      const availability = String(row.in_stock).toLowerCase() === 'yes' ? 'в наличии' : 'нет в наличии';\n      return (matchedRows.length > 1 ? (index + 1) + '. ' : '') + row.brand + ', ' + featureNames(row.features) + ', ' + row.year_from + '–' + row.year_to + ': стекло ' + money(row.price_glass) + ' + установка ' + money(row.price_work) + ' = ' + money(total) + '; ' + availability + '.';\n    });\n    const first = matchedRows[0];\n    const heading = matchedRows.length > 1\n      ? 'Для ' + first.make + ' ' + first.model + ', ' + typeName(first.glass_type) + ' стекло, нашёл ' + matchedRows.length + ' варианта:'\n      : 'По прайсу для ' + first.make + ' ' + first.model + ', ' + typeName(first.glass_type) + ' стекло:';\n    reply = heading + '\\n' + lines.join('\\n');\n    const availableCount = matchedRows.filter(row => String(row.in_stock).toLowerCase() === 'yes').length;\n    if (availableCount === 0 && !escalate) {\n      escalate = { reason: 'not_in_stock', summary: 'Все найденные позиции (' + requestedIds.join(', ') + ') отсутствуют в наличии; нужны альтернативы.' };\n      reply += '\\nСейчас эти позиции отмечены как отсутствующие. Подключаю менеджера, чтобы проверить альтернативы.';\n    }\n  }\n} else if (lookupStatus === 'not_found') {\n  reply = 'Извините, я не нашёл подходящую цену в прайс-листе. Подключаю менеджера — он уточнит стоимость.';\n  escalate = escalate || { reason: 'price_not_found', summary: 'Цена не найдена для запроса: ' + thread.incomingText };\n} else if (lookupStatus === 'need_details' && !reply) {\n  reply = 'Уточните, пожалуйста, марку, модель, год автомобиля и какое стекло требуется: лобовое, заднее или боковое?';\n}\n\nif (!reply) reply = 'Чем могу помочь с подбором автостекла?';\nlet history = [];\ntry { history = JSON.parse(thread.history || '[]'); } catch (e) { history = []; }\nhistory.push({ role: 'customer', text: thread.incomingText });\nhistory.push({ role: 'assistant', text: reply });\nif (history.length > 20) history = history.slice(-20);\nconst newMode = escalate ? 'human' : (thread.mode || 'ai');\nreturn [{ json: {\n  customerChatId: thread.customerChatId,\n  topicId: thread.topicId,\n  reply,\n  escalate,\n  newMode,\n  updatedHistory: JSON.stringify(history),\n  lookupStatus,\n  matchedPriceId: matchedRows.length === 1 ? matchedRows[0].id : null,\n  matchedPriceIds: matchedRows.map(row => row.id)\n} }];"
-      }
+        "jsCode": "const input = $input.first().json;\nconst raw = String(input.text || '').trim();\nconst context = $('\u041f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u0438\u0442\u044c \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442 \u043f\u0440\u0430\u0439\u0441\u0430').first().json;\nconst thread = $('\u0421\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u0435 \u0442\u0440\u0435\u0434\u0430').first().json;\nconst priceRows = Array.isArray(context.priceRows) ? context.priceRows : [];\nlet parsed;\ntry {\n  const match = raw.match(/\\{[\\s\\S]*\\}/);\n  parsed = JSON.parse(match ? match[0] : raw);\n} catch (e) {\n  parsed = null;\n}\n\nlet reply = parsed?.reply ? String(parsed.reply).trim() : '';\nlet escalate = parsed?.escalate || null;\nlet lookupStatus = parsed?.lookupStatus || 'not_requested';\nlet requestedIds = Array.isArray(parsed?.matchedPriceIds) ? parsed.matchedPriceIds : [];\nif (!requestedIds.length && parsed?.matchedPriceId != null) requestedIds = [parsed.matchedPriceId];\nrequestedIds = [...new Set(requestedIds.map(String))];\nlet matchedRows = [];\n\nconst money = value => Number(value).toLocaleString('ru-RU') + ' \u20bd';\nconst typeName = value => ({ Front: '\u043b\u043e\u0431\u043e\u0432\u043e\u0435', Rear: '\u0437\u0430\u0434\u043d\u0435\u0435', Side: '\u0431\u043e\u043a\u043e\u0432\u043e\u0435' }[value] || value);\nconst featureNames = value => {\n  const names = { 'None': '\u0431\u0435\u0437 \u0434\u043e\u043f. \u043e\u043f\u0446\u0438\u0439', 'Rain sensor': '\u0434\u0430\u0442\u0447\u0438\u043a \u0434\u043e\u0436\u0434\u044f', 'Heating': '\u043e\u0431\u043e\u0433\u0440\u0435\u0432', 'Camera': '\u043a\u0430\u043c\u0435\u0440\u0430', 'HUD': 'HUD', 'Solar': '\u0441\u043e\u043b\u043d\u0446\u0435\u0437\u0430\u0449\u0438\u0442\u043d\u043e\u0435' };\n  return String(value || 'None').split(',').map(item => names[item.trim()] || item.trim()).join(', ');\n};\n\nif (!parsed) {\n  reply = '\u0418\u0437\u0432\u0438\u043d\u0438\u0442\u0435, \u0441\u0435\u0439\u0447\u0430\u0441 \u043d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u0437\u0430\u043f\u0440\u043e\u0441. \u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0430\u044e \u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0430 \u2014 \u043e\u043d \u043f\u043e\u043c\u043e\u0436\u0435\u0442 \u0441 \u043f\u043e\u0434\u0431\u043e\u0440\u043e\u043c \u0438 \u0446\u0435\u043d\u043e\u0439.';\n  escalate = { reason: 'ai_unavailable', summary: 'Gemini \u043d\u0435 \u0432\u0435\u0440\u043d\u0443\u043b \u043a\u043e\u0440\u0440\u0435\u043a\u0442\u043d\u044b\u0439 JSON. \u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043e\u0442\u0432\u0435\u0442 \u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0430.' };\n} else if (!context.priceListAvailable && lookupStatus !== 'not_requested') {\n  lookupStatus = 'not_found';\n  reply = '\u0418\u0437\u0432\u0438\u043d\u0438\u0442\u0435, \u0441\u0435\u0439\u0447\u0430\u0441 \u043d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0430\u043a\u0442\u0443\u0430\u043b\u044c\u043d\u044b\u0439 \u043f\u0440\u0430\u0439\u0441. \u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0430\u044e \u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0430 \u2014 \u043e\u043d \u0443\u0442\u043e\u0447\u043d\u0438\u0442 \u0446\u0435\u043d\u0443.';\n  escalate = { reason: 'price_source_unavailable', summary: '\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u043f\u0440\u0430\u0439\u0441 Google Sheets.' };\n} else if (lookupStatus === 'found' || lookupStatus === 'found_multiple') {\n  matchedRows = requestedIds.map(id => priceRows.find(row => String(row.id) === id)).filter(Boolean);\n  if (!matchedRows.length) {\n    lookupStatus = 'not_found';\n    reply = '\u0418\u0437\u0432\u0438\u043d\u0438\u0442\u0435, \u044f \u043d\u0435 \u043d\u0430\u0448\u0451\u043b \u043f\u043e\u0434\u0445\u043e\u0434\u044f\u0449\u0443\u044e \u0446\u0435\u043d\u0443 \u0432 \u043f\u0440\u0430\u0439\u0441-\u043b\u0438\u0441\u0442\u0435. \u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0430\u044e \u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0430 \u2014 \u043e\u043d \u0443\u0442\u043e\u0447\u043d\u0438\u0442 \u0441\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u044c.';\n    escalate = { reason: 'price_not_found', summary: '\u041c\u043e\u0434\u0435\u043b\u044c \u043d\u0435 \u0443\u043a\u0430\u0437\u0430\u043b\u0430 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0435 id \u0441\u0442\u0440\u043e\u043a \u043f\u0440\u0430\u0439\u0441\u0430 \u0434\u043b\u044f \u0437\u0430\u043f\u0440\u043e\u0441\u0430: ' + thread.incomingText };\n  } else if (matchedRows.length > 5) {\n    lookupStatus = 'need_details';\n    matchedRows = [];\n    reply = '\u041d\u0430\u0448\u043b\u043e\u0441\u044c \u043c\u043d\u043e\u0433\u043e \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u043e\u0432. \u0423\u0442\u043e\u0447\u043d\u0438\u0442\u0435, \u043f\u043e\u0436\u0430\u043b\u0443\u0439\u0441\u0442\u0430, \u043a\u043e\u043c\u043f\u043b\u0435\u043a\u0442\u0430\u0446\u0438\u044e \u0441\u0442\u0435\u043a\u043b\u0430: \u043d\u0430\u043b\u0438\u0447\u0438\u0435 \u0434\u0430\u0442\u0447\u0438\u043a\u0430 \u0434\u043e\u0436\u0434\u044f, \u043e\u0431\u043e\u0433\u0440\u0435\u0432\u0430, \u043a\u0430\u043c\u0435\u0440\u044b \u0438\u043b\u0438 HUD.';\n    escalate = null;\n  } else {\n    if (escalate && ['price_not_found', 'price_source_unavailable'].includes(escalate.reason)) escalate = null;\n    const lines = matchedRows.map((row, index) => {\n      const total = Number(row.price_glass) + Number(row.price_work);\n      const availability = String(row.in_stock).toLowerCase() === 'yes' ? '\u0432 \u043d\u0430\u043b\u0438\u0447\u0438\u0438' : '\u043d\u0435\u0442 \u0432 \u043d\u0430\u043b\u0438\u0447\u0438\u0438';\n      return (matchedRows.length > 1 ? (index + 1) + '. ' : '') + row.brand + ', ' + featureNames(row.features) + ', ' + row.year_from + '\u2013' + row.year_to + ': \u0441\u0442\u0435\u043a\u043b\u043e ' + money(row.price_glass) + ' + \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0430 ' + money(row.price_work) + ' = ' + money(total) + '; ' + availability + '.';\n    });\n    const first = matchedRows[0];\n    const heading = matchedRows.length > 1\n      ? '\u0414\u043b\u044f ' + first.make + ' ' + first.model + ', ' + typeName(first.glass_type) + ' \u0441\u0442\u0435\u043a\u043b\u043e, \u043d\u0430\u0448\u0451\u043b ' + matchedRows.length + ' \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u0430:'\n      : '\u041f\u043e \u043f\u0440\u0430\u0439\u0441\u0443 \u0434\u043b\u044f ' + first.make + ' ' + first.model + ', ' + typeName(first.glass_type) + ' \u0441\u0442\u0435\u043a\u043b\u043e:';\n    reply = heading + '\\n' + lines.join('\\n');\n    const availableCount = matchedRows.filter(row => String(row.in_stock).toLowerCase() === 'yes').length;\n    if (availableCount === 0 && !escalate) {\n      escalate = { reason: 'not_in_stock', summary: '\u0412\u0441\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043d\u044b\u0435 \u043f\u043e\u0437\u0438\u0446\u0438\u0438 (' + requestedIds.join(', ') + ') \u043e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u044e\u0442 \u0432 \u043d\u0430\u043b\u0438\u0447\u0438\u0438; \u043d\u0443\u0436\u043d\u044b \u0430\u043b\u044c\u0442\u0435\u0440\u043d\u0430\u0442\u0438\u0432\u044b.' };\n      reply += '\\n\u0421\u0435\u0439\u0447\u0430\u0441 \u044d\u0442\u0438 \u043f\u043e\u0437\u0438\u0446\u0438\u0438 \u043e\u0442\u043c\u0435\u0447\u0435\u043d\u044b \u043a\u0430\u043a \u043e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0435. \u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0430\u044e \u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0430, \u0447\u0442\u043e\u0431\u044b \u043f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c \u0430\u043b\u044c\u0442\u0435\u0440\u043d\u0430\u0442\u0438\u0432\u044b.';\n    }\n  }\n} else if (lookupStatus === 'not_found') {\n  reply = '\u0418\u0437\u0432\u0438\u043d\u0438\u0442\u0435, \u044f \u043d\u0435 \u043d\u0430\u0448\u0451\u043b \u043f\u043e\u0434\u0445\u043e\u0434\u044f\u0449\u0443\u044e \u0446\u0435\u043d\u0443 \u0432 \u043f\u0440\u0430\u0439\u0441-\u043b\u0438\u0441\u0442\u0435. \u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0430\u044e \u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0430 \u2014 \u043e\u043d \u0443\u0442\u043e\u0447\u043d\u0438\u0442 \u0441\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u044c.';\n  escalate = escalate || { reason: 'price_not_found', summary: '\u0426\u0435\u043d\u0430 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u0430 \u0434\u043b\u044f \u0437\u0430\u043f\u0440\u043e\u0441\u0430: ' + thread.incomingText };\n} else if (lookupStatus === 'need_details' && !reply) {\n  reply = '\u0423\u0442\u043e\u0447\u043d\u0438\u0442\u0435, \u043f\u043e\u0436\u0430\u043b\u0443\u0439\u0441\u0442\u0430, \u043c\u0430\u0440\u043a\u0443, \u043c\u043e\u0434\u0435\u043b\u044c, \u0433\u043e\u0434 \u0430\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b\u044f \u0438 \u043a\u0430\u043a\u043e\u0435 \u0441\u0442\u0435\u043a\u043b\u043e \u0442\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f: \u043b\u043e\u0431\u043e\u0432\u043e\u0435, \u0437\u0430\u0434\u043d\u0435\u0435 \u0438\u043b\u0438 \u0431\u043e\u043a\u043e\u0432\u043e\u0435?';\n}\n\nif (!reply) reply = '\u0427\u0435\u043c \u043c\u043e\u0433\u0443 \u043f\u043e\u043c\u043e\u0447\u044c \u0441 \u043f\u043e\u0434\u0431\u043e\u0440\u043e\u043c \u0430\u0432\u0442\u043e\u0441\u0442\u0435\u043a\u043b\u0430?';\nlet history = [];\ntry { history = JSON.parse(thread.history || '[]'); } catch (e) { history = []; }\nhistory.push({ role: 'customer', text: thread.incomingText });\nhistory.push({ role: 'assistant', text: reply });\nif (history.length > 20) history = history.slice(-20);\nconst newMode = escalate ? 'human' : (thread.mode || 'ai');\nreturn [{ json: {\n  customerChatId: thread.customerChatId,\n  topicId: thread.topicId,\n  reply,\n  escalate,\n  newMode,\n  updatedHistory: JSON.stringify(history),\n  lookupStatus,\n  matchedPriceId: matchedRows.length === 1 ? matchedRows[0].id : null,\n  matchedPriceIds: matchedRows.map(row => row.id)\n} }];"
+      },
+      "notes": "\u0410\u043d\u0430\u043b\u0438\u0437\u0438\u0440\u0443\u0435\u0442 \u043e\u0442\u0432\u0435\u0442 \u0418\u0418 \u0438 \u0444\u043e\u0440\u043c\u0438\u0440\u0443\u0435\u0442 \u043e\u0442\u0432\u0435\u0442 \u0434\u043b\u044f \u043a\u043b\u0438\u0435\u043d\u0442\u0430",
+      "notesInFlow": true
     },
     {
       "id": "6655acdf-1e63-4d36-b1f4-72778e634e1a",
-      "name": "Update Thread After Reply",
+      "name": "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0442\u0440\u0435\u0434 \u043f\u043e\u0441\u043b\u0435 \u043e\u0442\u0432\u0435\u0442\u0430",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
@@ -413,11 +445,13 @@
             "history": "={{ $json.updatedHistory }}"
           }
         }
-      }
+      },
+      "notes": "\u0421\u043e\u0445\u0440\u0430\u043d\u044f\u0435\u0442 \u043d\u043e\u0432\u0443\u044e \u0438\u0441\u0442\u043e\u0440\u0438\u044e \u0438 \u0440\u0435\u0436\u0438\u043c \u0432 \u0411\u0414",
+      "notesInFlow": true
     },
     {
       "id": "df634559-6b88-4986-8e5a-4e1f2d630b4b",
-      "name": "Reply To Customer",
+      "name": "\u041e\u0442\u0432\u0435\u0442\u0438\u0442\u044c \u043a\u043b\u0438\u0435\u043d\u0442\u0443",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
@@ -427,8 +461,8 @@
       "parameters": {
         "resource": "message",
         "operation": "sendMessage",
-        "chatId": "={{ $('Parse LLM Output').item.json.customerChatId }}",
-        "text": "={{ String($('Parse LLM Output').item.json.reply || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "chatId": "={{ $('\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418').item.json.customerChatId }}",
+        "text": "={{ String($('\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418').item.json.reply || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
         "additionalFields": {
           "parse_mode": "HTML",
           "appendAttribution": false
@@ -437,13 +471,15 @@
       "credentials": {
         "telegramApi": {
           "id": "1",
-          "name": "Telegram Bot (замени credential)"
+          "name": "Telegram Bot (\u0437\u0430\u043c\u0435\u043d\u0438 credential)"
         }
-      }
+      },
+      "notes": "\u041e\u0442\u043f\u0440\u0430\u0432\u043b\u044f\u0435\u0442 \u043e\u0442\u0432\u0435\u0442 \u0418\u0418 \u043a\u043b\u0438\u0435\u043d\u0442\u0443 \u0432 \u043b\u0438\u0447\u043d\u044b\u0439 \u0447\u0430\u0442",
+      "notesInFlow": true
     },
     {
       "id": "40ff091e-fb05-4ee1-a81d-57eff36a2cd8",
-      "name": "Mirror LLM Answer",
+      "name": "\u0414\u0443\u0431\u043b\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
@@ -454,7 +490,7 @@
         "resource": "message",
         "operation": "sendMessage",
         "chatId": "-1003881399417",
-        "text": "=🤖 LLM: {{ String($('Parse LLM Output').item.json.reply || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "text": "=\ud83e\udd16 LLM: {{ String($('\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418').item.json.reply || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
         "additionalFields": {
           "message_thread_id": "={{ $('Parse LLM Output').item.json.topicId }}",
           "parse_mode": "HTML",
@@ -464,13 +500,15 @@
       "credentials": {
         "telegramApi": {
           "id": "1",
-          "name": "Telegram Bot (замени credential)"
+          "name": "Telegram Bot (\u0437\u0430\u043c\u0435\u043d\u0438 credential)"
         }
-      }
+      },
+      "notes": "\u0414\u0443\u0431\u043b\u0438\u0440\u0443\u0435\u0442 \u043e\u0442\u0432\u0435\u0442 \u0418\u0418 \u0432 \u0442\u043e\u043f\u0438\u043a \u0433\u0440\u0443\u043f\u043f\u044b",
+      "notesInFlow": true
     },
     {
       "id": "e7f9cb08-9e36-425e-ab4d-786908b286c5",
-      "name": "If Escalate",
+      "name": "\u0415\u0441\u043b\u0438 \u044d\u0441\u043a\u0430\u043b\u0430\u0446\u0438\u044f",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
@@ -497,11 +535,13 @@
           ],
           "combinator": "and"
         }
-      }
+      },
+      "notes": "\u041f\u0440\u043e\u0432\u0435\u0440\u044f\u0435\u0442, \u043d\u0443\u0436\u043d\u043e \u043b\u0438 \u043f\u043e\u0437\u0432\u0430\u0442\u044c \u0447\u0435\u043b\u043e\u0432\u0435\u043a\u0430 (\u044d\u0441\u043a\u0430\u043b\u0430\u0446\u0438\u044f)",
+      "notesInFlow": true
     },
     {
       "id": "5b9e9351-c6fa-4562-aff9-79c070505986",
-      "name": "Post Escalation Alert",
+      "name": "\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u0430\u043b\u0435\u0440\u0442 \u044d\u0441\u043a\u0430\u043b\u0430\u0446\u0438\u0438",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
@@ -512,7 +552,7 @@
         "resource": "message",
         "operation": "sendMessage",
         "chatId": "-1003881399417",
-        "text": "=🔔 {{ String($('Parse LLM Output').item.json.escalate.reason || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}: {{ String($('Parse LLM Output').item.json.escalate.summary || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "text": "=\ud83d\udd14 {{ String($('\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418').item.json.escalate.reason || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}: {{ String($('\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418').item.json.escalate.summary || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
         "additionalFields": {
           "message_thread_id": "={{ $('Parse LLM Output').item.json.topicId }}",
           "parse_mode": "HTML",
@@ -522,13 +562,15 @@
       "credentials": {
         "telegramApi": {
           "id": "1",
-          "name": "Telegram Bot (замени credential)"
+          "name": "Telegram Bot (\u0437\u0430\u043c\u0435\u043d\u0438 credential)"
         }
-      }
+      },
+      "notes": "\u041e\u0442\u043f\u0440\u0430\u0432\u043b\u044f\u0435\u0442 \u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u0435 \u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0430\u043c \u0432 \u0442\u043e\u043f\u0438\u043a",
+      "notesInFlow": true
     },
     {
       "id": "2cf04df2-8784-41a2-b2da-53f29cca0238",
-      "name": "If Staff Message Valid",
+      "name": "\u0415\u0441\u043b\u0438 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430 \u0432\u0430\u043b\u0438\u0434\u043d\u043e",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
@@ -564,11 +606,13 @@
           ],
           "combinator": "and"
         }
-      }
+      },
+      "notes": "\u041f\u0440\u043e\u0432\u0435\u0440\u044f\u0435\u0442, \u0447\u0442\u043e \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u043e\u0442 \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430 \u0432 \u043d\u0443\u0436\u043d\u043e\u043c \u0442\u043e\u043f\u0438\u043a\u0435",
+      "notesInFlow": true
     },
     {
       "id": "f74a9a8d-6fa9-4a6c-b30b-e0cf2b743445",
-      "name": "Get Thread By Topic",
+      "name": "\u041f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0442\u0440\u0435\u0434 \u043f\u043e \u0442\u043e\u043f\u0438\u043a\u0443",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
@@ -597,11 +641,13 @@
         "returnAll": false,
         "limit": 1
       },
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "notes": "\u0418\u0449\u0435\u0442 \u043a\u043b\u0438\u0435\u043d\u0442\u0430 \u043f\u043e ID \u0442\u043e\u043f\u0438\u043a\u0430",
+      "notesInFlow": true
     },
     {
       "id": "8d9024c4-e3dd-4ddd-bd34-7983df966030",
-      "name": "Normalize Topic Lookup",
+      "name": "\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u043e\u043f\u0438\u043a\u0430",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -611,12 +657,14 @@
       "parameters": {
         "mode": "runOnceForAllItems",
         "language": "javaScript",
-        "jsCode": "const matches = $input.all();\nconst trigger = $('Telegram Trigger').first().json;\nconst text = trigger.message.text || '';\nconst row = matches.map(item => item.json).find(item => item && item.topic_id != null);\nif (row) {\n  return [{ json: { found: true, customerChatId: row.customer_chat_id, topicId: row.topic_id, text } }];\n}\nreturn [{ json: { found: false, customerChatId: null, topicId: trigger.message.message_thread_id, text } }];"
-      }
+        "jsCode": "const matches = $input.all();\nconst trigger = $('\u0422\u0440\u0438\u0433\u0433\u0435\u0440 Telegram').first().json;\nconst text = trigger.message.text || '';\nconst row = matches.map(item => item.json).find(item => item && item.topic_id != null);\nif (row) {\n  return [{ json: { found: true, customerChatId: row.customer_chat_id, topicId: row.topic_id, text } }];\n}\nreturn [{ json: { found: false, customerChatId: null, topicId: trigger.message.message_thread_id, text } }];"
+      },
+      "notes": "\u041f\u043e\u0434\u0433\u043e\u0442\u0430\u0432\u043b\u0438\u0432\u0430\u0435\u0442 \u0434\u0430\u043d\u043d\u044b\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043d\u043e\u0433\u043e \u0442\u0440\u0435\u0434\u0430",
+      "notesInFlow": true
     },
     {
       "id": "7e26b195-e8f5-4bb0-a2b4-31db85185988",
-      "name": "If Thread Found",
+      "name": "\u0415\u0441\u043b\u0438 \u0442\u0440\u0435\u0434 \u043d\u0430\u0439\u0434\u0435\u043d",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
@@ -643,11 +691,13 @@
           ],
           "combinator": "and"
         }
-      }
+      },
+      "notes": "\u0423\u0431\u0435\u0436\u0434\u0430\u0435\u0442\u0441\u044f, \u0447\u0442\u043e \u0442\u0440\u0435\u0434 \u0434\u043b\u044f \u0442\u043e\u043f\u0438\u043a\u0430 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u0435\u0442",
+      "notesInFlow": true
     },
     {
       "id": "c783f586-deb3-4b5d-8c30-fbe5d145b9bc",
-      "name": "If Is Ai Command",
+      "name": "\u0415\u0441\u043b\u0438 \u043a\u043e\u043c\u0430\u043d\u0434\u0430 \u0418\u0418",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
@@ -674,11 +724,13 @@
           ],
           "combinator": "and"
         }
-      }
+      },
+      "notes": "\u041f\u0440\u043e\u0432\u0435\u0440\u044f\u0435\u0442, \u044f\u0432\u043b\u044f\u0435\u0442\u0441\u044f \u043b\u0438 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u043a\u043e\u043c\u0430\u043d\u0434\u043e\u0439 /ai",
+      "notesInFlow": true
     },
     {
       "id": "2ee5ba0e-b32a-4ad1-8a8f-2d5f529e42ea",
-      "name": "Set Mode Ai",
+      "name": "\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c \u0418\u0418",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
@@ -710,11 +762,13 @@
             "mode": "ai"
           }
         }
-      }
+      },
+      "notes": "\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0430\u0435\u0442 \u0440\u0435\u0436\u0438\u043c \u043e\u0431\u0449\u0435\u043d\u0438\u044f \u043d\u0430 \u0418\u0418 \u0432 \u0411\u0414",
+      "notesInFlow": true
     },
     {
       "id": "5a6ca47a-7979-4259-93ea-12b8d561f622",
-      "name": "Confirm Ai Resumed",
+      "name": "\u041f\u043e\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044c \u0432\u043e\u0437\u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u0418\u0418",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
@@ -725,7 +779,7 @@
         "resource": "message",
         "operation": "sendMessage",
         "chatId": "-1003881399417",
-        "text": "Бот снова отвечает автоматически.",
+        "text": "\u0411\u043e\u0442 \u0441\u043d\u043e\u0432\u0430 \u043e\u0442\u0432\u0435\u0447\u0430\u0435\u0442 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438.",
         "additionalFields": {
           "message_thread_id": "={{ $('Normalize Topic Lookup').item.json.topicId }}",
           "parse_mode": "HTML",
@@ -735,13 +789,15 @@
       "credentials": {
         "telegramApi": {
           "id": "1",
-          "name": "Telegram Bot (замени credential)"
+          "name": "Telegram Bot (\u0437\u0430\u043c\u0435\u043d\u0438 credential)"
         }
-      }
+      },
+      "notes": "\u0423\u0432\u0435\u0434\u043e\u043c\u043b\u044f\u0435\u0442 \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u043e\u0432, \u0447\u0442\u043e \u0418\u0418 \u0441\u043d\u043e\u0432\u0430 \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442",
+      "notesInFlow": true
     },
     {
       "id": "f30b79e9-6614-49a0-ae7d-4f9f4218f1c2",
-      "name": "Set Mode Human",
+      "name": "\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c \u0427\u0435\u043b\u043e\u0432\u0435\u043a",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
@@ -773,11 +829,13 @@
             "mode": "human"
           }
         }
-      }
+      },
+      "notes": "\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0430\u0435\u0442 \u0440\u0435\u0436\u0438\u043c \u043e\u0431\u0449\u0435\u043d\u0438\u044f \u043d\u0430 \u0427\u0435\u043b\u043e\u0432\u0435\u043a\u0430 \u0432 \u0411\u0414",
+      "notesInFlow": true
     },
     {
       "id": "f163de0f-29ec-4515-b9f4-b350a99354e4",
-      "name": "Forward Staff Reply",
+      "name": "\u041f\u0435\u0440\u0435\u0441\u043b\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
@@ -787,8 +845,8 @@
       "parameters": {
         "resource": "message",
         "operation": "sendMessage",
-        "chatId": "={{ $('Normalize Topic Lookup').item.json.customerChatId }}",
-        "text": "={{ String($('Normalize Topic Lookup').item.json.text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "chatId": "={{ $('\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u043e\u043f\u0438\u043a\u0430').item.json.customerChatId }}",
+        "text": "={{ String($('\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u043e\u043f\u0438\u043a\u0430').item.json.text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
         "additionalFields": {
           "parse_mode": "HTML",
           "appendAttribution": false
@@ -797,324 +855,517 @@
       "credentials": {
         "telegramApi": {
           "id": "1",
-          "name": "Telegram Bot (замени credential)"
+          "name": "Telegram Bot (\u0437\u0430\u043c\u0435\u043d\u0438 credential)"
         }
-      }
+      },
+      "notes": "\u041f\u0435\u0440\u0435\u0441\u044b\u043b\u0430\u0435\u0442 \u043e\u0442\u0432\u0435\u0442 \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430 \u043a\u043b\u0438\u0435\u043d\u0442\u0443 \u0432 \u043b\u0438\u0447\u043d\u044b\u0439 \u0447\u0430\u0442",
+      "notesInFlow": true
+    },
+    {
+      "id": "d0250282-13e5-4770-b53f-98e44f1a6a6b",
+      "name": "\u0421\u043b\u043e\u0432\u043e change \u043d\u0430\u0439\u0434\u0435\u043d\u043e?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1950,
+        -460
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.incomingText }}",
+              "rightValue": "change",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "notes": "\u041f\u0435\u0440\u0435\u0445\u0432\u0430\u0442\u044b\u0432\u0430\u0435\u0442 \u0441\u043b\u043e\u0432\u043e 'change' \u0434\u043b\u044f \u0441\u043c\u0435\u043d\u044b \u0440\u0435\u0436\u0438\u043c\u0430",
+      "notesInFlow": true
+    },
+    {
+      "id": "3f777f91-c868-4328-9ebb-fd86aa7c19fa",
+      "name": "\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2150,
+        -460
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const state = $input.first().json;\nconst currentMode = state.mode || 'ai';\nconst newMode = currentMode === 'ai' ? 'human' : 'ai';\nlet history = [];\ntry { history = JSON.parse(state.history || '[]'); } catch (e) { history = []; }\nhistory.push({ role: 'system', text: '\u0420\u0435\u0436\u0438\u043c \u0438\u0437\u043c\u0435\u043d\u0435\u043d \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u043c \u043d\u0430 ' + newMode });\nreturn [{ json: {\n  customerChatId: state.customerChatId,\n  topicId: state.topicId,\n  newMode: newMode,\n  updatedHistory: JSON.stringify(history)\n} }];"
+      },
+      "notes": "\u041c\u0435\u043d\u044f\u0435\u0442 ai <-> human",
+      "notesInFlow": true
+    },
+    {
+      "id": "3bfab279-930d-4496-8d6b-0e2c2f1ce6a7",
+      "name": "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c \u043f\u043e \u0441\u043b\u043e\u0432\u0443 \u0432 \u0411\u0414",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2350,
+        -460
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "auto_glass_threads",
+          "cachedResultName": "auto_glass_threads"
+        },
+        "matchType": "anyCondition",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "customer_chat_id",
+              "condition": "eq",
+              "keyValue": "={{ $('\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c').item.json.customerChatId }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "mode": "={{ $('\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c').item.json.newMode }}",
+            "history": "={{ $('\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c').item.json.updatedHistory }}"
+          }
+        }
+      },
+      "notes": "\u0421\u043e\u0445\u0440\u0430\u043d\u044f\u0435\u0442 \u043d\u043e\u0432\u044b\u0439 \u0440\u0435\u0436\u0438\u043c \u0432 \u0411\u0414",
+      "notesInFlow": true
+    },
+    {
+      "id": "28793932-8643-4dbc-83a1-500fbf5278bc",
+      "name": "\u0423\u0432\u0435\u0434\u043e\u043c\u0438\u0442\u044c \u043a\u043b\u0438\u0435\u043d\u0442\u0430 \u043e \u0440\u0435\u0436\u0438\u043c\u0435",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2550,
+        -560
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $('\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c').item.json.customerChatId }}",
+        "text": "={{ $('\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c').item.json.newMode === 'ai' ? '\ud83e\udd16 \u0420\u0435\u0436\u0438\u043c \u043e\u0431\u0449\u0435\u043d\u0438\u044f \u043f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0435\u043d \u043d\u0430 \u0418\u0418.' : '\ud83d\udc64 \u0420\u0435\u0436\u0438\u043c \u043e\u0431\u0449\u0435\u043d\u0438\u044f \u043f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0435\u043d \u043d\u0430 \u0427\u0435\u043b\u043e\u0432\u0435\u043a\u0430 (\u041c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0430).' }}",
+        "additionalFields": {
+          "parse_mode": "HTML",
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram Bot (\u0437\u0430\u043c\u0435\u043d\u0438 credential)"
+        }
+      },
+      "notes": "\u041e\u0442\u043f\u0440\u0430\u0432\u043b\u044f\u0435\u0442 \u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u0435 \u043a\u043b\u0438\u0435\u043d\u0442\u0443",
+      "notesInFlow": true
+    },
+    {
+      "id": "f5b88e9e-c2de-4693-9ce0-34b481f0ae0f",
+      "name": "\u0423\u0432\u0435\u0434\u043e\u043c\u0438\u0442\u044c \u0442\u043e\u043f\u0438\u043a \u043e \u0440\u0435\u0436\u0438\u043c\u0435",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2550,
+        -360
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "-1003881399417",
+        "text": "={{ $('\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c').item.json.newMode === 'ai' ? '\ud83e\udd16 \u041a\u043b\u0438\u0435\u043d\u0442 \u043f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u043b \u0440\u0435\u0436\u0438\u043c \u043d\u0430 \u0418\u0418.' : '\ud83d\udc64 \u041a\u043b\u0438\u0435\u043d\u0442 \u043f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u043b \u0440\u0435\u0436\u0438\u043c \u043d\u0430 \u0427\u0435\u043b\u043e\u0432\u0435\u043a\u0430 (\u041c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0430).' }}",
+        "additionalFields": {
+          "message_thread_id": "={{ $('\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c').item.json.topicId }}",
+          "parse_mode": "HTML",
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram Bot (\u0437\u0430\u043c\u0435\u043d\u0438 credential)"
+        }
+      },
+      "notes": "\u041e\u0442\u043f\u0440\u0430\u0432\u043b\u044f\u0435\u0442 \u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u0435 \u0432 \u0442\u043e\u043f\u0438\u043a",
+      "notesInFlow": true
     }
   ],
   "connections": {
-    "Telegram Trigger": {
+    "\u0422\u0440\u0438\u0433\u0433\u0435\u0440 Telegram": {
       "main": [
         [
           {
-            "node": "If Is Private",
+            "node": "\u0415\u0441\u043b\u0438 \u043f\u0440\u0438\u0432\u0430\u0442\u043d\u044b\u0439 \u0447\u0430\u0442",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "If Is Private": {
+    "\u0415\u0441\u043b\u0438 \u043f\u0440\u0438\u0432\u0430\u0442\u043d\u044b\u0439 \u0447\u0430\u0442": {
       "main": [
         [
           {
-            "node": "Get Thread By Chat",
+            "node": "\u041f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0442\u0440\u0435\u0434 \u043f\u043e \u0447\u0430\u0442\u0443",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "If Staff Message Valid",
+            "node": "\u0415\u0441\u043b\u0438 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430 \u0432\u0430\u043b\u0438\u0434\u043d\u043e",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Get Thread By Chat": {
+    "\u041f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0442\u0440\u0435\u0434 \u043f\u043e \u0447\u0430\u0442\u0443": {
       "main": [
         [
           {
-            "node": "Normalize Thread Lookup",
+            "node": "\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u0440\u0435\u0434\u0430",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Normalize Thread Lookup": {
+    "\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u0440\u0435\u0434\u0430": {
       "main": [
         [
           {
-            "node": "If Need New Topic",
+            "node": "\u0415\u0441\u043b\u0438 \u043d\u0443\u0436\u0435\u043d \u043d\u043e\u0432\u044b\u0439 \u0442\u043e\u043f\u0438\u043a",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "If Need New Topic": {
+    "\u0415\u0441\u043b\u0438 \u043d\u0443\u0436\u0435\u043d \u043d\u043e\u0432\u044b\u0439 \u0442\u043e\u043f\u0438\u043a": {
       "main": [
         [
           {
-            "node": "Create Forum Topic",
+            "node": "\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u0442\u043e\u043f\u0438\u043a \u043d\u0430 \u0444\u043e\u0440\u0443\u043c\u0435",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Thread State",
+            "node": "\u0421\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u0435 \u0442\u0440\u0435\u0434\u0430",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Create Forum Topic": {
+    "\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u0442\u043e\u043f\u0438\u043a \u043d\u0430 \u0444\u043e\u0440\u0443\u043c\u0435": {
       "main": [
         [
           {
-            "node": "Insert Thread Row",
+            "node": "\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0441\u0442\u0440\u043e\u043a\u0443 \u0442\u0440\u0435\u0434\u0430",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Insert Thread Row": {
+    "\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0441\u0442\u0440\u043e\u043a\u0443 \u0442\u0440\u0435\u0434\u0430": {
       "main": [
         [
           {
-            "node": "Thread State",
+            "node": "\u0421\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u0435 \u0442\u0440\u0435\u0434\u0430",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Thread State": {
+    "\u0421\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u0435 \u0442\u0440\u0435\u0434\u0430": {
       "main": [
         [
           {
-            "node": "If Mode Is Human",
+            "node": "\u0421\u043b\u043e\u0432\u043e change \u043d\u0430\u0439\u0434\u0435\u043d\u043e?",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Mirror Customer To Topic": {
+    "\u0414\u0443\u0431\u043b\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043a\u043b\u0438\u0435\u043d\u0442\u0430 \u0432 \u0442\u043e\u043f\u0438\u043a": {
       "main": [
         []
       ]
     },
-    "If Mode Is Human": {
+    "\u0415\u0441\u043b\u0438 \u0440\u0435\u0436\u0438\u043c \u0427\u0435\u043b\u043e\u0432\u0435\u043a": {
       "main": [
         [
           {
-            "node": "Mirror Customer To Topic (Human)",
+            "node": "\u0414\u0443\u0431\u043b\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043a\u043b\u0438\u0435\u043d\u0442\u0430 \u0432 \u0442\u043e\u043f\u0438\u043a (\u0427\u0435\u043b\u043e\u0432\u0435\u043a)",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Mirror Customer To Topic",
+            "node": "\u0414\u0443\u0431\u043b\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043a\u043b\u0438\u0435\u043d\u0442\u0430 \u0432 \u0442\u043e\u043f\u0438\u043a",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Load Price List",
+            "node": "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u043f\u0440\u0430\u0439\u0441-\u043b\u0438\u0441\u0442",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Mirror Customer To Topic (Human)": {
+    "\u0414\u0443\u0431\u043b\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043a\u043b\u0438\u0435\u043d\u0442\u0430 \u0432 \u0442\u043e\u043f\u0438\u043a (\u0427\u0435\u043b\u043e\u0432\u0435\u043a)": {
       "main": [
         []
       ]
     },
-    "Load Price List": {
+    "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u043f\u0440\u0430\u0439\u0441-\u043b\u0438\u0441\u0442": {
       "main": [
         [
           {
-            "node": "Prepare Price Context",
+            "node": "\u041f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u0438\u0442\u044c \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442 \u043f\u0440\u0430\u0439\u0441\u0430",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Prepare Price Context": {
+    "\u041f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u0438\u0442\u044c \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442 \u043f\u0440\u0430\u0439\u0441\u0430": {
       "main": [
         [
           {
-            "node": "Ask LLM",
+            "node": "\u0421\u043f\u0440\u043e\u0441\u0438\u0442\u044c \u0418\u0418",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Gemini Model": {
+    "\u041c\u043e\u0434\u0435\u043b\u044c Gemini": {
       "ai_languageModel": [
         [
           {
-            "node": "Ask LLM",
+            "node": "\u0421\u043f\u0440\u043e\u0441\u0438\u0442\u044c \u0418\u0418",
             "type": "ai_languageModel",
             "index": 0
           }
         ]
       ]
     },
-    "Ask LLM": {
+    "\u0421\u043f\u0440\u043e\u0441\u0438\u0442\u044c \u0418\u0418": {
       "main": [
         [
           {
-            "node": "Parse LLM Output",
+            "node": "\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Parse LLM Output": {
+    "\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418": {
       "main": [
         [
           {
-            "node": "Update Thread After Reply",
+            "node": "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0442\u0440\u0435\u0434 \u043f\u043e\u0441\u043b\u0435 \u043e\u0442\u0432\u0435\u0442\u0430",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Update Thread After Reply": {
+    "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0442\u0440\u0435\u0434 \u043f\u043e\u0441\u043b\u0435 \u043e\u0442\u0432\u0435\u0442\u0430": {
       "main": [
         [
           {
-            "node": "Reply To Customer",
+            "node": "\u041e\u0442\u0432\u0435\u0442\u0438\u0442\u044c \u043a\u043b\u0438\u0435\u043d\u0442\u0443",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Reply To Customer": {
+    "\u041e\u0442\u0432\u0435\u0442\u0438\u0442\u044c \u043a\u043b\u0438\u0435\u043d\u0442\u0443": {
       "main": [
         [
           {
-            "node": "Mirror LLM Answer",
+            "node": "\u0414\u0443\u0431\u043b\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Mirror LLM Answer": {
+    "\u0414\u0443\u0431\u043b\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0418\u0418": {
       "main": [
         [
           {
-            "node": "If Escalate",
+            "node": "\u0415\u0441\u043b\u0438 \u044d\u0441\u043a\u0430\u043b\u0430\u0446\u0438\u044f",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "If Escalate": {
+    "\u0415\u0441\u043b\u0438 \u044d\u0441\u043a\u0430\u043b\u0430\u0446\u0438\u044f": {
       "main": [
         [
           {
-            "node": "Post Escalation Alert",
+            "node": "\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u0430\u043b\u0435\u0440\u0442 \u044d\u0441\u043a\u0430\u043b\u0430\u0446\u0438\u0438",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "If Staff Message Valid": {
+    "\u0415\u0441\u043b\u0438 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430 \u0432\u0430\u043b\u0438\u0434\u043d\u043e": {
       "main": [
         [
           {
-            "node": "Get Thread By Topic",
+            "node": "\u041f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0442\u0440\u0435\u0434 \u043f\u043e \u0442\u043e\u043f\u0438\u043a\u0443",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Get Thread By Topic": {
+    "\u041f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0442\u0440\u0435\u0434 \u043f\u043e \u0442\u043e\u043f\u0438\u043a\u0443": {
       "main": [
         [
           {
-            "node": "Normalize Topic Lookup",
+            "node": "\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u043e\u043f\u0438\u043a\u0430",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Normalize Topic Lookup": {
+    "\u041d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u043f\u043e\u0438\u0441\u043a\u0430 \u0442\u043e\u043f\u0438\u043a\u0430": {
       "main": [
         [
           {
-            "node": "If Thread Found",
+            "node": "\u0415\u0441\u043b\u0438 \u0442\u0440\u0435\u0434 \u043d\u0430\u0439\u0434\u0435\u043d",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "If Thread Found": {
+    "\u0415\u0441\u043b\u0438 \u0442\u0440\u0435\u0434 \u043d\u0430\u0439\u0434\u0435\u043d": {
       "main": [
         [
           {
-            "node": "If Is Ai Command",
+            "node": "\u0415\u0441\u043b\u0438 \u043a\u043e\u043c\u0430\u043d\u0434\u0430 \u0418\u0418",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "If Is Ai Command": {
+    "\u0415\u0441\u043b\u0438 \u043a\u043e\u043c\u0430\u043d\u0434\u0430 \u0418\u0418": {
       "main": [
         [
           {
-            "node": "Set Mode Ai",
+            "node": "\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c \u0418\u0418",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Set Mode Human",
+            "node": "\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c \u0427\u0435\u043b\u043e\u0432\u0435\u043a",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Set Mode Ai": {
+    "\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c \u0418\u0418": {
       "main": [
         [
           {
-            "node": "Confirm Ai Resumed",
+            "node": "\u041f\u043e\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044c \u0432\u043e\u0437\u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u0418\u0418",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Set Mode Human": {
+    "\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c \u0427\u0435\u043b\u043e\u0432\u0435\u043a": {
       "main": [
         [
           {
-            "node": "Forward Staff Reply",
+            "node": "\u041f\u0435\u0440\u0435\u0441\u043b\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "\u0421\u043b\u043e\u0432\u043e change \u043d\u0430\u0439\u0434\u0435\u043d\u043e?": {
+      "main": [
+        [
+          {
+            "node": "\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "\u0415\u0441\u043b\u0438 \u0440\u0435\u0436\u0438\u043c \u0427\u0435\u043b\u043e\u0432\u0435\u043a",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c": {
+      "main": [
+        [
+          {
+            "node": "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c \u043f\u043e \u0441\u043b\u043e\u0432\u0443 \u0432 \u0411\u0414",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0440\u0435\u0436\u0438\u043c \u043f\u043e \u0441\u043b\u043e\u0432\u0443 \u0432 \u0411\u0414": {
+      "main": [
+        [
+          {
+            "node": "\u0423\u0432\u0435\u0434\u043e\u043c\u0438\u0442\u044c \u043a\u043b\u0438\u0435\u043d\u0442\u0430 \u043e \u0440\u0435\u0436\u0438\u043c\u0435",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "\u0423\u0432\u0435\u0434\u043e\u043c\u0438\u0442\u044c \u0442\u043e\u043f\u0438\u043a \u043e \u0440\u0435\u0436\u0438\u043c\u0435",
             "type": "main",
             "index": 0
           }
